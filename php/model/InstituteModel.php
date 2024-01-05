@@ -35,7 +35,33 @@ class InstituteModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
+			exit;
+		}
+	}
+	public static function read()
+	{
+		try {
+			$query = "SELECT * FROM " . self::TABLE;
+
+			$stmt = Database::connect()->prepare($query);
+
+			$stmt->execute();
+
+			$rowCount = $stmt->rowCount();
+
+			if ($rowCount == 0) {
+				return null;
+			}
+
+			$result = $stmt->fetchAll();
+
+			return $result;
+		} catch (PDOException $e) {
+			$response = [
+				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
+			];
+			response(false, $response);
 			exit;
 		}
 	}
@@ -71,7 +97,7 @@ class InstituteModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -107,7 +133,7 @@ class InstituteModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -136,7 +162,7 @@ class InstituteModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -166,7 +192,7 @@ class InstituteModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -192,7 +218,7 @@ class InstituteModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
