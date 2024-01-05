@@ -19,11 +19,11 @@ class Controller
 	public static function verifyJsonData($data)
 	{
 		if (!array_key_exists("CONTENT_TYPE", $_SERVER) || $_SERVER["CONTENT_TYPE"] !== "application/json") {
-			response(400, false, ["message" => "Content type header not set to JSON"]);
+			response(false, ["message" => "Content type header not set to JSON"]);
 			exit;
 		}
 		if (!$data) {
-			response(400, false, ["message" => "Request body is not valid JSON"]);
+			response(false, ["message" => "Request body is not valid JSON"]);
 			exit;
 		}
 	}
@@ -37,10 +37,10 @@ class Controller
 		$role = UserModel::find($userId, "user_id");
 
 		if ($role["role"] !== $requiredRole && $allowAccess) {
-			response(403, false, ["message" => "Access denied for user role: {$role['role']}"]);
+			response(false, ["message" => "Access denied for user role: {$role['role']}"]);
 			exit;
 		} else if ($role["role"] === $requiredRole && !$allowAccess) {
-			response(403, false, ["message" => "Access denied for user role: {$role['role']}"]);
+			response(false, ["message" => "Access denied for user role: {$role['role']}"]);
 			exit;
 		}
 	}

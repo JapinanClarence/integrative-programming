@@ -25,11 +25,10 @@ class FacultyModel
 		$contactNumber,
 		$institute,
 		$course,
-		$password,
-		$role
+		$password
 	) {
 		try {
-			$query = "CALL InsertFaculty(:role, :firstname, :middlename, :lastname, :birthday, :gender, :email, :contactNumber, :password, :institute, :course)";
+			$query = "CALL InsertFaculty(:firstname, :middlename, :lastname, :birthday, :gender, :email, :contactNumber, :password, :institute, :course)";
 
 			$stmt = Database::connect()->prepare($query);
 
@@ -43,7 +42,7 @@ class FacultyModel
 			$stmt->bindParam(":institute", $institute);
 			$stmt->bindParam(":course", $course);
 			$stmt->bindParam(":password", $password);
-			$stmt->bindParam(":role", $role);
+
 
 			$result = $stmt->execute() ? true : false;
 			return $result;
@@ -51,7 +50,7 @@ class FacultyModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -87,7 +86,7 @@ class FacultyModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -123,7 +122,7 @@ class FacultyModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -135,7 +134,7 @@ class FacultyModel
 	{
 		try {
 			//query statement
-			$query = "SELECT f.faculty_id, u.first_name, u.middle_name, u.last_name, f.course, f.institute FROM " . self::TABLE . " f JOIN users u ON u.user_id = f.user_id";
+			$query = "SELECT f.faculty_id, u.first_name, u.middle_name, u.last_name, f.course, f.institute, u.email, u.contact_number FROM " . self::TABLE . " f JOIN users u ON u.user_id = f.user_id";
 			//prepared statement
 			$stmt = Database::connect()->prepare($query);
 
@@ -152,7 +151,7 @@ class FacultyModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -196,7 +195,7 @@ class FacultyModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -222,7 +221,7 @@ class FacultyModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -253,7 +252,7 @@ class FacultyModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
