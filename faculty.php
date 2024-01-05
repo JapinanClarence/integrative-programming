@@ -118,7 +118,7 @@ include(__DIR__ . "/partials/head.php");
 
 		const generateRowMarkup = (data) => {
 			const fullname = data.first_name + " " + data.middle_name.charAt(0) + ". " + data.last_name;
-			console.log(data.faculty_id);
+
 			// const registeredDate = formatDateTime(data.created_at);
 
 			return `<tr>
@@ -133,7 +133,7 @@ include(__DIR__ . "/partials/head.php");
                         </a>
                         <form class="delete-form">
                             <input type="hidden" name="_method" value="DELETE">
-                            <input type="hidden" name="id" value="${data.id}">
+                            <input type="hidden" id="id" name="id" value="${data.faculty_id}">
                             <button class="btn delete-btn" type="submit">
                                 <i class="fas fa-trash text-danger"></i>
                             </button>
@@ -141,6 +141,44 @@ include(__DIR__ . "/partials/head.php");
                     </td>
                 </tr>`;
 		};
+
+		// Event listener for the delete form
+		$(document).on("submit", ".delete-form", function(e) {
+			e.preventDefault();
+
+			// Add a confirmation before deleting
+			Swal.fire({
+				title: "Are you sure?",
+				text: "You won't be able to revert this!",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#3085d6",
+				cancelButtonColor: "#d33",
+				confirmButtonText: "Yes, delete it!"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					const faculty_id = $(this).find('input[name="id"]').val().trim();
+
+					const url = `./php/controller/admin/faculty.php?id=${faculty_id}`;
+					const data = {
+						id: faculty_id
+					};
+
+					$.ajax({
+						type: "DELETE",
+						url: url,
+						contentType: "application/json",
+						data: JSON.stringify(data),
+						success: function(res) {
+							// Refresh the table after successful operation
+							refreshTable();
+							handleSuccess(res);
+						},
+						error: handleError,
+					});
+				}
+			});
+		});
 
 		// Success handler
 		function handleSuccess(res) {
