@@ -118,7 +118,7 @@ include(__DIR__ . "/partials/head.php");
 
 		const generateRowMarkup = (data) => {
 			const fullname = data.first_name + " " + data.middle_name.charAt(0) + ". " + data.last_name;
-
+			console.log(data.faculty_id);
 			// const registeredDate = formatDateTime(data.created_at);
 
 			return `<tr>
@@ -128,7 +128,7 @@ include(__DIR__ . "/partials/head.php");
                     <td class="align-middle">${data.institute}</td>
                     <td class="align-middle">${data.course}</td>
                     <td class="align-middle d-flex align-items-center">
-                        <a href="edit_faculty.php?id="${data.id}" class="mr-2">
+                        <a href="edit_faculty.php?id=${data.faculty_id}" class="mr-2">
                             <i class="fas fa-edit"></i>
                         </a>
                         <form class="delete-form">

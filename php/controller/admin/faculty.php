@@ -23,7 +23,9 @@ class Faculty extends Controller
 
 		switch ($requestMethod) {
 			case "POST": {
+
 					$this->create();
+
 					break;
 				}
 			case "GET": {
