@@ -6,7 +6,6 @@ use database\Database;
 use PDOException;
 
 require_once(__DIR__ . "/../database/Database.php");
-require_once(__DIR__ . "/../middleware/JwtHandler.php");
 
 class UserModel
 {
@@ -48,7 +47,7 @@ class UserModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -81,7 +80,7 @@ class UserModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -119,7 +118,7 @@ class UserModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -145,7 +144,7 @@ class UserModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}

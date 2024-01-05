@@ -2,7 +2,6 @@
 
 namespace api;
 
-use middleware\JwtHandler;
 use model\UserModel;
 
 require_once(__DIR__ . "/../../model/UserModel.php");
@@ -20,7 +19,7 @@ class Student extends Controller
 					break;
 				}
 			default: {
-					response(400, false, ["message" => "Request method: {$requestMethod} not allowed!"]);
+					response(false, ["message" => "Request method: {$requestMethod} not allowed!"]);
 					break;
 				}
 		}
@@ -37,21 +36,18 @@ class Student extends Controller
 		$result = UserModel::find($email, "email");
 
 		if (!$result || !password_verify($password, $result["password"])) {
-			response(409, false, ["message" => "Invalid Credentials!"]);
+			response(false, ["message" => "Invalid Credentials!"]);
 			exit;
 		}
 
-		$jwtToken = new JwtHandler();
-		$token = $jwtToken->jwtEncodeData("itp130-api", ["user_id" => $result["user_id"]]);
 
 		$responseData = [
 			"message" => "Login successful",
 			"user_id" => $result["user_id"],
 			"role" => $result["role"],
-			"token" => $token
 		];
 
-		response(200, true, $responseData);
+		response(true, $responseData);
 	}
 }
 new Student();

@@ -3,7 +3,6 @@
 namespace api\admin;
 
 use api\Controller;
-use middleware\AuthMiddleware;
 use model\CourseModel;
 use model\InstituteModel;
 use model\StudentModel;
@@ -13,15 +12,12 @@ require_once(__DIR__ . "/../../model/CourseModel.php");
 require_once(__DIR__ . "/../../model/InstituteModel.php");
 require_once(__DIR__ . "/../../model/UserModel.php");
 require_once(__DIR__ . "/../../model/StudentModel.php");
-require_once(__DIR__ . "/../../middleware/AuthMiddleware.php");
 require_once(__DIR__ . "/../Controller.php");
 
 class Student extends Controller
 {
-	private $authResult;
 	public function __construct()
 	{
-		$this->authResult = AuthMiddleware::authenticate();
 		//verify user role
 		Controller::verifyRole($this->authResult, Controller::ADMIN_ROLE);
 		$requestMethod = $_SERVER["REQUEST_METHOD"];

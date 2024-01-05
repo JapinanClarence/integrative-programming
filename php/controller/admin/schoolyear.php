@@ -14,12 +14,8 @@ require_once(__DIR__ . "/../Controller.php");
 
 class SchoolYear extends Controller
 {
-	private $authResult;
 	public function __construct()
 	{
-		$this->authResult = AuthMiddleware::authenticate();
-		//verify user role
-		Controller::verifyRole($this->authResult, Controller::ADMIN_ROLE);
 
 		$requestMethod = $_SERVER["REQUEST_METHOD"];
 
@@ -47,7 +43,7 @@ class SchoolYear extends Controller
 					break;
 				}
 			default: {
-					response(400, false, ["message" => "Request method: {$requestMethod} not allowed!"]);
+					response(false, ["message" => "Request method: {$requestMethod} not allowed!"]);
 					break;
 				}
 		}
@@ -65,10 +61,10 @@ class SchoolYear extends Controller
 		$result = SchoolYearModel::create($schoolYear, $semester);
 
 		if (!$result) {
-			response(400, false, ["message" => "Registration failed!"]);
+			response(false, ["message" => "Registration failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Registered successfully!"]);
+			response(true, ["message" => "Registered successfully!"]);
 		}
 	}
 	public function show()
@@ -78,11 +74,11 @@ class SchoolYear extends Controller
 		$results = SchoolYearModel::find($id, "id");
 
 		if (!$results) {
-			response(404, false, ["message" => "School year not found!"]);
+			response(false, ["message" => "School year not found!"]);
 			exit;
 		}
 
-		response(200, true, $results);
+		response(true, $results);
 	}
 	public function search()
 	{
@@ -91,24 +87,24 @@ class SchoolYear extends Controller
 		$results = SchoolYearModel::search($query);
 
 		if (!$results) {
-			response(404, false, ["message" => "School year not found!"]);
+			response(false, ["message" => "School year not found!"]);
 			exit;
 		}
 
-		response(200, true, ["data" => $results]);
+		response(true, ["data" => $results]);
 	}
 	public function all()
 	{
 		$results = SchoolYearModel::all();
 
 		if (!$results) {
-			response(200, false, ["message" => "No registered school year currently"]);
+			response(false, ["message" => "No registered school year currently"]);
 			exit;
 		}
 
 		$numRows = count($results);
 
-		response(200, true, ["row_count" => $numRows, "data" => $results]);
+		response(true, ["row_count" => $numRows, "data" => $results]);
 	}
 	public function update()
 	{
@@ -125,7 +121,7 @@ class SchoolYear extends Controller
 
 
 		if (!SchoolYearModel::find($id, "id")) {
-			response(404, false, ["message" => "School year not found!"]);
+			response(false, ["message" => "School year not found!"]);
 			exit;
 		}
 
@@ -137,10 +133,10 @@ class SchoolYear extends Controller
 		}
 
 		if (!$schoolyear_update) {
-			response(400, false, ["message" => "Update failed!"]);
+			response(false, ["message" => "Update failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Update successfull!"]);
+			response(true, ["message" => "Update successfull!"]);
 		}
 	}
 	public function delete()
@@ -150,14 +146,14 @@ class SchoolYear extends Controller
 		$results = SchoolYearModel::find($id, "id");
 
 		if (!$results) {
-			response(404, false, ["message" => "School year not found!"]);
+			response(false, ["message" => "School year not found!"]);
 			exit;
 		}
 
 		if (SchoolYearModel::delete($id, "id")) {
-			response(200, true, ["message" => "Delete successful"]);
+			response(true, ["message" => "Delete successful"]);
 		} else {
-			response(400, false, ["message" => "Delete Failed!"]);
+			response(false, ["message" => "Delete Failed!"]);
 		}
 	}
 }
