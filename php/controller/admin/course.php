@@ -22,7 +22,9 @@ class Course extends Controller
 					break;
 				}
 			case "GET": {
-					if (array_key_exists("id", $_GET) || !empty($_GET["id"])) {
+					if (array_key_exists("action", $_GET) && $_GET["action"] === "course_institute") {
+						$this->fetchCourseByInstitute();
+					} else if (array_key_exists("id", $_GET) || !empty($_GET["id"])) {
 						$this->show();
 					} else if (array_key_exists("query", $_GET) || !empty($_GET["query"])) {
 						$this->search();
@@ -40,7 +42,7 @@ class Course extends Controller
 					break;
 				}
 			default: {
-					response(400, false, ["message" => "Request method: {$requestMethod} not allowed!"]);
+					response(false, ["message" => "Request method: {$requestMethod} not allowed!"]);
 					break;
 				}
 		}
@@ -61,11 +63,23 @@ class Course extends Controller
 		$result = CourseModel::create($title, $slug, $description, $institute);
 
 		if (!$result) {
-			response(400, false, ["message" => "Registration failed!"]);
+			response(false, ["message" => "Registration failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Registered successfully!"]);
+			response(true, ["message" => "Registered successfully!"]);
 		}
+	}
+	public function fetchCourseByInstitute()
+	{
+		$slug = isset($_GET["institute"]) ? $_GET["institute"] : null;
+
+		$results = CourseModel::find($slug, "institute", true);
+
+		if (!$results) {
+			response(false, ["message" => "Course not found!"]);
+			exit;
+		}
+		response(true, ["data" => $results]);
 	}
 	public function show()
 	{
@@ -74,11 +88,11 @@ class Course extends Controller
 		$results = CourseModel::find($id, "id");
 
 		if (!$results) {
-			response(404, false, ["message" => "Course not found!"]);
+			response(false, ["message" => "Course not found!"]);
 			exit;
 		}
 
-		response(200, true, $results);
+		response(true, $results);
 	}
 	public function search()
 	{
@@ -87,18 +101,18 @@ class Course extends Controller
 		$results = CourseModel::search($query);
 
 		if (!$results) {
-			response(404, false, ["message" => "Course not found!"]);
+			response(false, ["message" => "Course not found!"]);
 			exit;
 		}
 
-		response(200, true, ["data" => $results]);
+		response(true, ["data" => $results]);
 	}
 	public function all()
 	{
 		$results = CourseModel::all();
 
 		if (!$results) {
-			response(200, false, ["message" => "No registered course currently"]);
+			response(false, ["message" => "No registered course currently"]);
 			exit;
 		}
 
@@ -114,7 +128,7 @@ class Course extends Controller
 				"institute" => $result["institute"]
 			];
 		}
-		response(200, true, ["row_count" => $numRows, "data" => $returnData]);
+		response(true, ["row_count" => $numRows, "data" => $returnData]);
 	}
 	public function update()
 	{
@@ -131,17 +145,17 @@ class Course extends Controller
 		$institute = $data->institute;
 
 		if (!CourseModel::find($id, "id")) {
-			response(404, false, ["message" => "Course not found!"]);
+			response(false, ["message" => "Course not found!"]);
 			exit;
 		}
 
 		$result = CourseModel::update($id, $title, $slug, $description, $institute);
 
 		if (!$result) {
-			response(400, false, ["message" => "Update failed!"]);
+			response(false, ["message" => "Update failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Update successfull!"]);
+			response(true, ["message" => "Update successfull!"]);
 		}
 	}
 	public function delete()
@@ -151,7 +165,7 @@ class Course extends Controller
 		$results = CourseModel::find($id, "id");
 
 		if (!$results) {
-			response(404, false, ["message" => "Course not found!"]);
+			response(false, ["message" => "Course not found!"]);
 			exit;
 		}
 
@@ -159,14 +173,14 @@ class Course extends Controller
 		$studentByMajor = StudentModel::find($results["slug"], "course");
 
 		if ($studentByMajor) {
-			response(400, false, ["message" => "Students are enrolled in this course"]);
+			response(false, ["message" => "Students are enrolled in this course"]);
 			exit;
 		}
 
 		if (CourseModel::delete($id, "id")) {
-			response(200, true, ["message" => "Delete successful"]);
+			response(true, ["message" => "Delete successful"]);
 		} else {
-			response(400, false, ["message" => "Delete Failed!"]);
+			response(false, ["message" => "Delete Failed!"]);
 		}
 	}
 }

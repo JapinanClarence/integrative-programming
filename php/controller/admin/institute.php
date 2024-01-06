@@ -5,22 +5,15 @@ namespace api\admin;
 use api\Controller;
 use model\StudentModel;
 use model\InstituteModel;
-use middleware\AuthMiddleware;
 
 require_once(__DIR__ . "/../../model/InstituteModel.php");
 require_once(__DIR__ . "/../../model/StudentModel.php");
-require_once(__DIR__ . "/../../middleware/AuthMiddleware.php");
 require_once(__DIR__ . "/../Controller.php");
 
 class Institute extends Controller
 {
-	private $authResult;
 	public function __construct()
 	{
-		$this->authResult = AuthMiddleware::authenticate();
-		//verify user role
-		Controller::verifyRole($this->authResult, Controller::ADMIN_ROLE);
-
 		$requestMethod = $_SERVER["REQUEST_METHOD"];
 
 		switch ($requestMethod) {
@@ -47,7 +40,7 @@ class Institute extends Controller
 					break;
 				}
 			default: {
-					response(400, false, ["message" => "Request method: {$requestMethod} not allowed!"]);
+					response(false, ["message" => "Request method: {$requestMethod} not allowed!"]);
 					break;
 				}
 		}
@@ -66,10 +59,10 @@ class Institute extends Controller
 		$result = InstituteModel::create($title, $slug, $description);
 
 		if (!$result) {
-			response(400, false, ["message" => "Registration failed!"]);
+			response(false, ["message" => "Registration failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Registered successfully!"]);
+			response(true, ["message" => "Registered successfully!"]);
 		}
 	}
 	public function show()
@@ -79,11 +72,11 @@ class Institute extends Controller
 		$results = InstituteModel::find($id, "id");
 
 		if (!$results) {
-			response(404, false, ["message" => "Institute not found!"]);
+			response(false, ["message" => "Institute not found!"]);
 			exit;
 		}
 
-		response(200, true, $results);
+		response(true, $results);
 	}
 	public function search()
 	{
@@ -92,18 +85,18 @@ class Institute extends Controller
 		$results = InstituteModel::search($query);
 
 		if (!$results) {
-			response(404, false, ["message" => "Institute not found!"]);
+			response(false, ["message" => "Institute not found!"]);
 			exit;
 		}
 
-		response(200, true, ["data" => $results]);
+		response(true, ["data" => $results]);
 	}
 	public function all()
 	{
 		$results = InstituteModel::all();
 
 		if (!$results) {
-			response(200, false, ["message" => "No registered institute currently"]);
+			response(false, ["message" => "No registered institute currently"]);
 			exit;
 		}
 
@@ -118,7 +111,7 @@ class Institute extends Controller
 				"description" => $result["description"]
 			];
 		}
-		response(200, true, ["row_count" => $numRows, "data" => $returnData]);
+		response(true, ["row_count" => $numRows, "data" => $returnData]);
 	}
 	public function update()
 	{
@@ -135,17 +128,17 @@ class Institute extends Controller
 
 
 		if (!InstituteModel::find($id, "id")) {
-			response(404, false, ["message" => "Institute not found!"]);
+			response(false, ["message" => "Institute not found!"]);
 			exit;
 		}
 
 		$result = InstituteModel::update($id, $title, $slug, $description);
 
 		if (!$result) {
-			response(400, false, ["message" => "Update failed!"]);
+			response(false, ["message" => "Update failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Update successfull!"]);
+			response(true, ["message" => "Update successfull!"]);
 		}
 	}
 	public function delete()
@@ -155,22 +148,22 @@ class Institute extends Controller
 		$results = InstituteModel::find($id, "id");
 
 		if (!$results) {
-			response(404, false, ["message" => "Institute not found!"]);
+			response(false, ["message" => "Institute not found!"]);
 			exit;
 		}
 		//verify if student is enrolled in the institute
 		$studentByMajor = StudentModel::find($results["slug"], "institute");
 
 		if ($studentByMajor) {
-			response(400, false, ["message" => "Students are enrolled in this institute"]);
+			response(false, ["message" => "Students are enrolled in this institute"]);
 			exit;
 		}
 
 
 		if (InstituteModel::delete($id, "id")) {
-			response(200, true, ["message" => "Delete successful"]);
+			response(true, ["message" => "Delete successful"]);
 		} else {
-			response(400, false, ["message" => "Delete Failed!"]);
+			response(false, ["message" => "Delete Failed!"]);
 		}
 	}
 }

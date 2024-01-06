@@ -83,17 +83,21 @@ include(__DIR__ . "/partials/head.php");
 							<input type="email" class="form-control" id="email" name="email" required>
 						</div>
 					</div>
-
-					<div class="row mb-3">
-						<label for="course" class="col-sm-1 col-form-label">Course</label>
+					<div class="row mb-1">
+						<label for="institute" class="col-sm-1 col-form-label">Institute</label>
 						<div class="col-sm-11">
-							<input type="text" class="form-control" id="course" required>
+
+							<select class="form-control" id="institute" required>
+								<option value="default">Select institute</option>
+							</select>
 						</div>
 					</div>
 					<div class="row mb-3">
-						<label for="institute" class="col-sm-1 col-form-label">Institute</label>
+						<label for="course" class="col-sm-1 col-form-label">Course</label>
 						<div class="col-sm-11">
-							<input type="text" class="form-control" id="institute" required>
+							<select id="course" class="form-control">
+								<option value="default">Select course</option>
+							</select>
 						</div>
 					</div>
 					<button type="submit" class="btn btn-sm btn-primary" id="submit">Register Employee</button>
@@ -105,6 +109,43 @@ include(__DIR__ . "/partials/head.php");
 </div>
 <script>
 	$(function() {
+		const url = `./php/controller/admin/institute.php`;
+		$.ajax({
+			type: "GET",
+			url: url,
+			success: function(res) {
+				console.log(res);
+				res.data.map((data) => {
+					$("#institute").append(`<option value="${data.slug}">${data.slug}</option>`);
+				});
+			},
+			error: handleError,
+		});
+
+		$('#institute').on('change', function() {
+			const slug = $(this).val();
+
+			if (slug == "default") {
+				// Clear existing options
+				$('#course').empty();
+			} else {
+				$.ajax({
+					url: './php/controller/admin/course.php?action=course_institute',
+					type: "GET",
+					data: {
+						institute: slug
+					},
+					success: function(res) {
+
+						// Clear existing options
+						$('#course').empty();
+						res.data.map((course) => {
+							$("#course").append('<option value="' + course.slug + '">' + course.slug + '</option>');
+						})
+					}
+				})
+			}
+		})
 		$("#registration-form").on("submit", function(e) {
 			e.preventDefault();
 
