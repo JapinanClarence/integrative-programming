@@ -17,7 +17,7 @@ include(__DIR__ . "/partials/head.php");
 					<div class="col-sm-6">
 						<ol class="breadcrumb float-sm-right">
 							<li class="breadcrumb-item"><a href="#">Home</a></li>
-							<li class="breadcrumb-item active">Edit Faculty</li>
+							<li class="breadcrumb-item active">Edit Student</li>
 						</ol>
 					</div><!-- /.col -->
 				</div><!-- /.row -->
@@ -30,7 +30,7 @@ include(__DIR__ . "/partials/head.php");
 			<div class="container-fluid">
 				<div class="px-2">
 					<div class="d-flex justify-content-end mb-3">
-						<a class="btn-sm" href="faculty.php">
+						<a class="btn-sm" href="student.php">
 							Back
 							<i class="fas fa-solid fa-arrow-left ml-2 text-center"></i>
 						</a>
@@ -83,20 +83,68 @@ include(__DIR__ . "/partials/head.php");
 							<input type="email" class="form-control" id="email" name="email" required>
 						</div>
 					</div>
-
+					<div class="row mb-3">
+						<label for="street" class="col-sm-1 col-form-label">Street</label>
+						<div class="col-sm-11">
+							<input type="street" class="form-control" id="street" name="street" required>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label for="barangay" class="col-sm-1 col-form-label">Barangay</label>
+						<div class="col-sm-11">
+							<input type="barangay" class="form-control" id="barangay" name="barangay" required>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label for="municipality" class="col-sm-1 col-form-label">Municipality</label>
+						<div class="col-sm-11">
+							<input type="municipality" class="form-control" id="municipality" name="municipality" required>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label for="province" class="col-sm-1 col-form-label">Province</label>
+						<div class="col-sm-11">
+							<input type="province" class="form-control" id="province" name="province" required>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label for="zip_code" class="col-sm-1 col-form-label">Zip Code</label>
+						<div class="col-sm-11">
+							<input type="zip_code" class="form-control" id="zip_code" name="zip_code" required>
+						</div>
+					</div>
 					<div class="row mb-3">
 						<label for="course" class="col-sm-1 col-form-label">Course</label>
 						<div class="col-sm-11">
 							<input type="text" class="form-control" id="course" required>
 						</div>
 					</div>
-					<div class="row mb-3">
+					<div class="row mb-1">
 						<label for="institute" class="col-sm-1 col-form-label">Institute</label>
 						<div class="col-sm-11">
 							<input type="text" class="form-control" id="institute" required>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-sm btn-primary" id="submit">Update Info</button>
+					<h4>Emergency Contact:</h4>
+					<div class="row mb-3">
+						<label for="guardian_fullname" class="col-sm-1 col-form-label">Fullname</label>
+						<div class="col-sm-11">
+							<input type="guardian_fullname" class="form-control" id="guardian_fullname" name="guardian_fullname" required>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label for="guardian_contact" class="col-sm-1 col-form-label">Contact No.</label>
+						<div class="col-sm-11">
+							<input type="text" class="form-control" id="guardian_contact" required>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label for="guardian_address" class="col-sm-1 col-form-label">Address</label>
+						<div class="col-sm-11">
+							<input type="text" class="form-control" id="guardian_address" required>
+						</div>
+					</div>
+					<button type="submit" class="btn btn-sm btn-primary mb-3" id="submit">Update Info</button>
 				</form>
 			</div>
 		</div>
@@ -113,10 +161,10 @@ include(__DIR__ . "/partials/head.php");
 			return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 		}
 
-		// Get the faculty ID from the URL parameter
-		const facultyId = getUrlParameter('id');
+		// Get the student ID from the URL parameter
+		const studentId = getUrlParameter('id');
 
-		const url = `./php/controller/admin/faculty.php?id=${facultyId}`;
+		const url = `./php/controller/admin/student.php?id=${studentId}`;
 		$.ajax({
 			type: "GET",
 			url: url,
@@ -129,6 +177,14 @@ include(__DIR__ . "/partials/head.php");
 				$("#email").val(res.email);
 				$("#course").val(res.course);
 				$("#institute").val(res.institute);
+				$("#street").val(res.street);
+				$("#barangay").val(res.barangay);
+				$("#municipality").val(res.municipality);
+				$("#province").val(res.province);
+				$("#zip_code").val(res.zipcode);
+				$("#guardian_fullname").val(res.guardian_name);
+				$("#guardian_contact").val(res.guardian_contact);
+				$("#guardian_address").val(res.guardian_address);
 			},
 			error: handleError,
 		});
@@ -147,10 +203,18 @@ include(__DIR__ . "/partials/head.php");
 				contact: $("#contactNumber").val().trim(),
 				course: $("#course").val().trim(),
 				institute: $("#institute").val().trim(),
+				street: $("#street").val().trim(),
+				barangay: $("#barangay").val().trim(),
+				municipality: $("#municipality").val().trim(),
+				province: $("#province").val().trim(),
+				zipcode: $("#zip_code").val().trim(),
+				guardian_name: $("#guardian_fullname").val().trim(),
+				guardian_address: $("#guardian_address").val().trim(),
+				guardian_contact: $("#guardian_contact").val().trim()
 			};
 
 
-			const url = `./php/controller/admin/faculty.php?id=${facultyId}`;
+			const url = `./php/controller/admin/student.php?id=${studentId}`;
 			$.ajax({
 				type: "PATCH",
 				url: url,

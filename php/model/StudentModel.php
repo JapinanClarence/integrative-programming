@@ -22,10 +22,9 @@ class StudentModel
 		$lastname,
 		$birthday,
 		$gender,
-		$contactNumber,
 		$email,
+		$contactNumber,
 		$password,
-		$role,
 		$street,
 		$barangay,
 		$municipality,
@@ -39,12 +38,11 @@ class StudentModel
 
 	) {
 		try {
-			$query = "CALL InsertStudent(:studentId, :role, :firstname, :middlename, :lastname, :birthday, :gender, :email, :contactNumber, :password, :street, :barangay, :municipality, :province, :zipcode, :institute, :course, :guardianName, :guardianContact, :guardianAddress)";
+			$query = "CALL InsertStudent(:studentId, :firstname, :middlename, :lastname, :birthday, :gender, :email, :contactNumber,:password, :street, :barangay, :municipality, :province, :zipcode, :institute, :course, :guardianName, :guardianContact, :guardianAddress)";
 
 			$stmt = Database::connect()->prepare($query);
 
 			$stmt->bindParam(":studentId", $studentId);
-			$stmt->bindParam(":role", $role);
 			$stmt->bindParam(":firstname", $firstname);
 			$stmt->bindParam(":middlename", $middlename);
 			$stmt->bindParam(":lastname", $lastname);
@@ -70,7 +68,7 @@ class StudentModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -103,7 +101,7 @@ class StudentModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -139,7 +137,7 @@ class StudentModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -151,7 +149,7 @@ class StudentModel
 	{
 		try {
 			//query statement
-			$query = "SELECT s.student_id, u.first_name, u.middle_name, u.last_name, s.course, s.institute FROM " . self::TABLE . " s JOIN users u ON u.user_id = s.user_id";
+			$query = "SELECT s.student_id, u.first_name, u.middle_name, u.last_name, u.email, u.contact_number, s.course, s.institute FROM " . self::TABLE . " s JOIN users u ON u.user_id = s.user_id";
 			//prepared statement
 			$stmt = Database::connect()->prepare($query);
 
@@ -168,7 +166,7 @@ class StudentModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -228,7 +226,7 @@ class StudentModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -254,7 +252,7 @@ class StudentModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -279,7 +277,7 @@ class StudentModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}

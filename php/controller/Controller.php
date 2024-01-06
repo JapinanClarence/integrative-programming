@@ -47,7 +47,9 @@ class Controller
 	public static function generateIdNum($recordCount)
 	{
 		// Get the current year
-		$currentYear = SchoolYearModel::find("1", "status")["year"];
+		$currentYear = SchoolYearModel::find("1", "status")["school_year"];
+
+		$currentYear = explode("-", $currentYear);
 
 		if ($recordCount > 0) {
 			$recordCount = ++$recordCount; // Increment by 1 for the next record
@@ -59,14 +61,14 @@ class Controller
 		$incrementedNumber = sprintf("%04d", $recordCount);
 
 		// Concatenate the current year and incremented number with a hyphen
-		$idNumber = $currentYear . '-' . $incrementedNumber;
+		$idNumber = $currentYear[0] . '-' . $incrementedNumber;
 
 		if (StudentModel::find($idNumber, "student_id")) {
 			$recordCount = ++$recordCount;
 
 			$incrementedNumber = sprintf("%04d", $recordCount);
 
-			$idNumber = $currentYear . '-' . $incrementedNumber;
+			$idNumber = $currentYear[0] . '-' . $incrementedNumber;
 			return $idNumber;
 		}
 		return $idNumber;

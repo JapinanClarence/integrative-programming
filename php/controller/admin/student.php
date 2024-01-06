@@ -18,8 +18,6 @@ class Student extends Controller
 {
 	public function __construct()
 	{
-		//verify user role
-		Controller::verifyRole($this->authResult, Controller::ADMIN_ROLE);
 		$requestMethod = $_SERVER["REQUEST_METHOD"];
 
 		switch ($requestMethod) {
@@ -46,7 +44,7 @@ class Student extends Controller
 					break;
 				}
 			default: {
-					response(400, false, ["message" => "Request method: {$requestMethod} not allowed!"]);
+					response(false, ["message" => "Request method: {$requestMethod} not allowed!"]);
 					break;
 				}
 		}
@@ -79,7 +77,7 @@ class Student extends Controller
 		//verify if email is already taken
 		$fetchEmail = UserModel::find($email, "email");
 		if ($fetchEmail) {
-			response(409, false, ["message" => "Email already taken"]);
+			response(false, ["message" => "Email already taken"]);
 			exit;
 		}
 
@@ -99,22 +97,22 @@ class Student extends Controller
 		$password = password_hash($student_id, PASSWORD_DEFAULT);
 
 		if (!CourseModel::find($course, "slug")) {
-			response(400, false, ["message" => "Course does not exists"]);
+			response(false, ["message" => "Course does not exists"]);
 			exit;
 		}
 
 		if (!InstituteModel::find($institute, "slug")) {
-			response(400, false, ["message" => "Insitute does not exists"]);
+			response(false, ["message" => "Insitute does not exists"]);
 			exit;
 		}
 
-		$result = StudentModel::create($student_id, $firstname, $middlename, $lastname, $birthday, $gender, $contact, $email, $password, Controller::STUDENT_ROLE, $street, $barangay, $municipality, $province, $zipcode, $institute, $course, $guardian_name, $guardian_contact, $guardian_address);
+		$result = StudentModel::create($student_id, $firstname, $middlename, $lastname, $birthday, $gender, $email, $contact, $password, $street, $barangay, $municipality, $province, $zipcode, $institute, $course, $guardian_name, $guardian_contact, $guardian_address);
 
 		if (!$result) {
-			response(400, false, ["message" => "Registration failed!"]);
+			response(false, ["message" => "Registration failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Registered successfully!"]);
+			response(true, ["message" => "Registered successfully!"]);
 		}
 	}
 	public function show()
@@ -124,11 +122,11 @@ class Student extends Controller
 		$results = StudentModel::find($studentId, "student_id");
 
 		if (!$results) {
-			response(404, false, ["message" => "Student not found!"]);
+			response(false, ["message" => "Student not found!"]);
 			exit;
 		}
 
-		response(200, true, $results);
+		response(true, $results);
 	}
 	public function search()
 	{
@@ -137,23 +135,23 @@ class Student extends Controller
 		$results = StudentModel::search($query);
 
 		if (!$results) {
-			response(404, false, ["message" => "Student not found!"]);
+			response(false, ["message" => "Student not found!"]);
 			exit;
 		}
 
-		response(200, true, ["data" => $results]);
+		response(true, ["data" => $results]);
 	}
 	public function all()
 	{
 		$results = StudentModel::all();
 		if (!$results) {
-			response(200, false, ["message" => "No registered students currently"]);
+			response(false, ["message" => "No registered students currently"]);
 			exit;
 		}
 
 		$numRows = count($results);
 
-		response(200, true, ["row_count" => $numRows, "data" => $results]);
+		response(true, ["row_count" => $numRows, "data" => $results]);
 	}
 	public function update()
 	{
@@ -185,27 +183,27 @@ class Student extends Controller
 		$student = StudentModel::find($student_id, "student_id");
 
 		if (!$student) {
-			response(404, false, ["message" => "Student not found!"]);
+			response(false, ["message" => "Student not found!"]);
 			exit;
 		}
 
 		if (!CourseModel::find($course, "slug")) {
-			response(400, false, ["message" => "Course does not exists"]);
+			response(false, ["message" => "Course does not exists"]);
 			exit;
 		}
 
 		if (!InstituteModel::find($institute, "slug")) {
-			response(400, false, ["message" => "Insitute does not exists"]);
+			response(false, ["message" => "Insitute does not exists"]);
 			exit;
 		}
 
 		$registerStudent = StudentModel::update($student['user_id'], $student_id, $firstname, $middlename, $lastname, $birthday, $gender, $contact, $email, $street, $barangay, $municipality, $province, $zipcode, $institute, $course, $guardian_name, $guardian_contact, $guardian_address);
 
 		if (!$registerStudent) {
-			response(400, false, ["message" => "Update failed!"]);
+			response(false, ["message" => "Update failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Updated successfully!"]);
+			response(true, ["message" => "Updated successfully!"]);
 		}
 	}
 	public function delete()
@@ -215,14 +213,14 @@ class Student extends Controller
 		$results = StudentModel::find($studentId, "student_id");
 
 		if (!$results) {
-			response(404, false, ["message" => "Student not found!"]);
+			response(false, ["message" => "Student not found!"]);
 			exit;
 		}
 
 		if (UserModel::delete($results["user_id"], "user_id")) {
-			response(200, true, ["message" => "Delete successful"]);
+			response(true, ["message" => "Delete successful"]);
 		} else {
-			response(400, false, ["message" => "Delete Failed!"]);
+			response(false, ["message" => "Delete Failed!"]);
 		}
 	}
 }
