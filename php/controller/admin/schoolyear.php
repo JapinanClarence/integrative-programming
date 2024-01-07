@@ -4,12 +4,10 @@ namespace api\admin;
 
 use api\Controller;
 use model\SchoolYearModel;
-use middleware\AuthMiddleware;
 use model\SubjectModel;
 
 require_once(__DIR__ . "/../../model/SchoolYearModel.php");
 require_once(__DIR__ . "/../../model/SubjectModel.php");
-require_once(__DIR__ . "/../../middleware/AuthMiddleware.php");
 require_once(__DIR__ . "/../Controller.php");
 
 class SchoolYear extends Controller

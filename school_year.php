@@ -12,12 +12,12 @@ include(__DIR__ . "/partials/head.php");
 			<div class="container-fluid">
 				<div class="row mb-2">
 					<div class="col-sm-6">
-						<h1 class="m-0">Subjects</h1>
+						<h1 class="m-0">School Year</h1>
 					</div><!-- /.col -->
 					<div class="col-sm-6">
 						<ol class="breadcrumb float-sm-right">
 							<li class="breadcrumb-item"><a href="#">Home</a></li>
-							<li class="breadcrumb-item active">Subjects</li>
+							<li class="breadcrumb-item active">School Year</li>
 						</ol>
 					</div><!-- /.col -->
 				</div><!-- /.row -->
@@ -29,8 +29,8 @@ include(__DIR__ . "/partials/head.php");
 		<div class="content">
 			<div class="container-fluid">
 				<div class="d-flex justify-content-end mb-3">
-					<a class="btn-sm btn-info" href="register_subject.php">
-						Register Subject
+					<a class="btn-sm btn-info" href="register_schoolyear.php">
+						Register School Year
 					</a>
 				</div>
 				<div class="table-responsive-sm rounded" style="height: 500px; overflow-y: auto;">
@@ -38,12 +38,10 @@ include(__DIR__ . "/partials/head.php");
 						<caption>List of subjects</caption>
 						<thead class="thead-dark">
 							<tr>
-								<th scope="col">Code</th>
-								<th scope="col">Description</th>
-								<th scope="col">Unit</th>
-								<th scope="col">Type</th>
-								<th scope="col">Status</th>
+								<th scope="col">Id</th>
 								<th scope="col">School Year</th>
+								<th scope="col">Semester</th>
+								<th scope="col">Status</th>
 								<th scope="col">Action</th>
 							</tr>
 						</thead>
@@ -72,7 +70,7 @@ include(__DIR__ . "/partials/head.php");
 
 		// Function to refresh the table
 		function refreshTable() {
-			const url = "./php/controller/admin/subject.php";
+			const url = "./php/controller/admin/schoolyear.php";
 
 			$.ajax({
 				type: "GET",
@@ -91,7 +89,7 @@ include(__DIR__ . "/partials/head.php");
 						$("#table-body").append(`
                         <tr>
                             <td colspan="6" class="text-center">
-                                <p class="card-text">No Registered Subjects!</p>
+                                <p class="card-text">No Registered School Year!</p>
                             </td>
                         </tr>
                     `);
@@ -107,19 +105,18 @@ include(__DIR__ . "/partials/head.php");
 			const statusColor = data.status == "1" ? "text-success" : "text-danger";
 
 			return `<tr>
-					<td class="align-middle">${data.code}</td>
-                    <td class="align-middle">${data.description}</td>
-                    <td class="align-middle">${data.unit}</td>
-                    <td class="align-middle">${data.type}</td>
-                    <td class="align-middle ${statusColor}">${status}</td>
+					<td class="align-middle">${data.id}</td>
                     <td class="align-middle">${data.school_year}</td>
+                    <td class="align-middle">${data.semester}</td>
+                    <td class="align-middle ${statusColor}">
+						${status}
+					</td>
                     <td class="align-middle d-flex align-items-center">
-                        <a href="edit_subject.php?id=${data.code}" class="mr-2">
+					<a href="edit_schoolyear.php?id=${data.id}" class="mr-2">
                             <i class="fas fa-edit"></i>
                         </a>
                         <form class="delete-form">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <input type="hidden" id="code" name="code" value="${data.code}">
+                            <input type="hidden" id="delete_id" name="delete_id" value="${data.id}">
                             <button class="btn delete-btn" type="submit">
                                 <i class="fas fa-trash text-danger"></i>
                             </button>
@@ -143,13 +140,12 @@ include(__DIR__ . "/partials/head.php");
 				confirmButtonText: "Yes, delete it!"
 			}).then((result) => {
 				if (result.isConfirmed) {
-					const subject_code = $(this).find('input[name="code"]').val();
+					const delete_id = $(this).find('input[name="delete_id"]').val();
 
-					const url = `./php/controller/admin/subject.php?code=${subject_code}`;
+					const url = `./php/controller/admin/schoolyear.php?id=${delete_id}`;
 					const data = {
-						id: subject_code
+						id: delete_id
 					};
-
 					$.ajax({
 						type: "DELETE",
 						url: url,
@@ -165,7 +161,33 @@ include(__DIR__ . "/partials/head.php");
 				}
 			});
 		});
+		// Event listener for the delete form
+		$(document).on("submit", ".udpate-form", function(e) {
+			e.preventDefault();
+			const update_id = $(this).find('input[name="update_id"]').val();
+			const currentStatus = $("#status").val();
+			const newStatus = currentStatus == 1 ? '0' : '1';
 
+			console.log(currentStatus);
+			// //gather form data
+			// const formData = {
+			// 	status: $("#status").val(),
+			// 	description: $("#description").val().trim(),
+			// 	institute: $("#institute").val()
+			// };
+
+			// const url = `./php/controller/admin/institute.php?id=${update_id}`;
+			// $.ajax({
+			// 	type: "PATCH",
+			// 	url: url,
+			// 	contentType: "application/json",
+			// 	data: JSON.stringify(formData),
+			// 	success: function(res) {
+			// 		showToast("success", "Update successfull");
+			// 	},
+			// 	error: handleError,
+			// });
+		});
 		// Success handler
 		function handleSuccess(res) {
 			const data = JSON.parse(res);
@@ -187,37 +209,6 @@ include(__DIR__ . "/partials/head.php");
 				icon: icon,
 				title: title,
 			});
-		}
-
-		//format date time
-		function formatDateTime(inputDateTime) {
-			// Parse the input datetime string
-			const parsedDateTime = new Date(inputDateTime);
-
-			// Extract components of the date and time
-			const year = parsedDateTime.getFullYear();
-			const month = (parsedDateTime.getMonth() + 1).toString().padStart(2, "0"); // Month is zero-indexed, so add 1
-			const day = parsedDateTime.getDate().toString().padStart(2, "0");
-			const hours = parsedDateTime.getHours().toString().padStart(2, "0");
-			const minutes = parsedDateTime.getMinutes().toString().padStart(2, "0");
-			const ampm = parsedDateTime.getHours() >= 12 ? "pm" : "am";
-
-			// Adjust hours for 12-hour format
-			const formattedHours = parsedDateTime.getHours() % 12 || 12;
-
-			// Construct the formatted datetime string
-			const formattedDateTime = `${month}/${day}/${year} ${formattedHours}:${minutes}${ampm}`;
-
-			return formattedDateTime;
-		}
-
-		function formatDate(inputDate) {
-			const date = new Date(inputDate);
-			const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
-			const day = date.getDate().toString().padStart(2, '0');
-			const year = date.getFullYear();
-
-			return `${month}/${day}/${year}`;
 		}
 	});
 </script>

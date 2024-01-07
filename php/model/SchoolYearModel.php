@@ -33,7 +33,7 @@ class SchoolYearModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -69,7 +69,7 @@ class SchoolYearModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -106,7 +106,7 @@ class SchoolYearModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -135,7 +135,7 @@ class SchoolYearModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -165,7 +165,7 @@ class SchoolYearModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -191,7 +191,7 @@ class SchoolYearModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
