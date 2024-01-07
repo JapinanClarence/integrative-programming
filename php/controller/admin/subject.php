@@ -10,6 +10,7 @@ use model\UserModel;
 
 require_once(__DIR__ . "/../../model/SubjectModel.php");
 require_once(__DIR__ . "/../../model/FacultyModel.php");
+require_once(__DIR__ . "/../../model/SchoolYearModel.php");
 require_once(__DIR__ . "/../Controller.php");
 
 class Subject extends Controller
@@ -43,7 +44,7 @@ class Subject extends Controller
 					break;
 				}
 			default: {
-					response(400, false, ["message" => "Request method: {$requestMethod} not allowed!"]);
+					response(false, ["message" => "Request method: {$requestMethod} not allowed!"]);
 					break;
 				}
 		}
@@ -59,16 +60,17 @@ class Subject extends Controller
 		$description = $data->description;
 		$unit = $data->unit;
 		$type = $data->type;
-		$schoolyear = $data->schoolYear;
-		$status = $data->status;
 
-		$result = SubjectModel::create($code, $description, $unit, $type, $schoolyear, $status);
+		$schoolyear = SchoolYearModel::find("1", "status");
+		$status = $schoolyear["status"];
+
+		$result = SubjectModel::create($code, $description, $unit, $type, $schoolyear["id"], $status);
 
 		if (!$result) {
-			response(400, false, ["message" => "Registration failed!"]);
+			response(false, ["message" => "Registration failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Registered successfully!"]);
+			response(true, ["message" => "Registered successfully!"]);
 		}
 	}
 	public function show()
@@ -78,7 +80,7 @@ class Subject extends Controller
 		$results = SubjectModel::find($code, "code");
 
 		if (!$results) {
-			response(404, false, ["message" => "Subject not found!"]);
+			response(false, ["message" => "Subject not found!"]);
 			exit;
 		}
 
@@ -95,7 +97,7 @@ class Subject extends Controller
 			"created_at" => $results["created_at"],
 			"updated_at" => $results["updated_at"]
 		];
-		response(200, true, $returnData);
+		response(true, $returnData);
 	}
 	public function search()
 	{
@@ -104,7 +106,7 @@ class Subject extends Controller
 		$results = SubjectModel::search($query);
 
 		if (!$results) {
-			response(404, false, ["message" => "Subject not found!"]);
+			response(false, ["message" => "Subject not found!"]);
 			exit;
 		}
 
@@ -123,14 +125,14 @@ class Subject extends Controller
 			];
 		}
 
-		response(200, true, ["data" => $returnData]);
+		response(true, ["data" => $returnData]);
 	}
 	public function all()
 	{
 		$results = SubjectModel::all();
 
 		if (!$results) {
-			response(200, false, ["message" => "No registered subjects currently"]);
+			response(false, ["message" => "No registered subjects currently"]);
 			exit;
 		}
 
@@ -149,7 +151,7 @@ class Subject extends Controller
 
 		$numRows = count($results);
 
-		response(200, true, ["row_count" => $numRows, "data" => $returnData]);
+		response(true, ["row_count" => $numRows, "data" => $returnData]);
 	}
 	public function update()
 	{
@@ -163,21 +165,19 @@ class Subject extends Controller
 		$description = $data->description;
 		$unit = $data->unit;
 		$type = $data->type;
-		$schoolyear = $data->schoolYear;
-		$status = $data->status;
 
 		if (!SubjectModel::find($code, "code")) {
-			response(404, false, ["message" => "Subject not found!"]);
+			response(false, ["message" => "Subject not found!"]);
 			exit;
 		}
 
-		$result = SubjectModel::update($code, $description, $unit, $type, $schoolyear, $status);
+		$result = SubjectModel::update($code, $description, $unit, $type);
 
 		if (!$result) {
-			response(400, false, ["message" => "Update failed!"]);
+			response(false, ["message" => "Update failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Update successfull!"]);
+			response(true, ["message" => "Update successfull!"]);
 		}
 	}
 	public function delete()
@@ -187,14 +187,14 @@ class Subject extends Controller
 		$results = SubjectModel::find($code, "code");
 
 		if (!$results) {
-			response(404, false, ["message" => "Subject not found!"]);
+			response(false, ["message" => "Subject not found!"]);
 			exit;
 		}
 
 		if (SubjectModel::delete($code, "code")) {
-			response(200, true, ["message" => "Delete successful"]);
+			response(true, ["message" => "Delete successful"]);
 		} else {
-			response(400, false, ["message" => "Delete Failed!"]);
+			response(false, ["message" => "Delete Failed!"]);
 		}
 	}
 	// private function getFacultyFullname($facultyId)

@@ -181,11 +181,9 @@ class SubjectModel
 		$description,
 		$unit,
 		$type,
-		$schoolYear,
-		$status
 	) {
 		try {
-			$query = "UPDATE " . self::TABLE . " SET  description = :description, unit = :unit, type = :type, status = :status, school_year = :schoolYear WHERE code = :code";
+			$query = "UPDATE " . self::TABLE . " SET  description = :description, unit = :unit, type = :type WHERE code = :code";
 
 			$stmt = Database::connect()->prepare($query);
 
@@ -193,9 +191,6 @@ class SubjectModel
 			$stmt->bindParam(":description", $description);
 			$stmt->bindParam(":unit", $unit);
 			$stmt->bindParam(":type", $type);
-			$stmt->bindParam(":status", $status);
-			$stmt->bindParam(":schoolYear", $schoolYear);
-
 
 			$result = $stmt->execute() ? true : false;
 			return $result;

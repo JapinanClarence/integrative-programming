@@ -45,7 +45,7 @@
 					</a>
 				</li>
 				<li class="nav-item">
-					<a href="#" class="nav-link">
+					<a href="subjects.php" class="nav-link">
 						<i class="nav-icon fas fa-solid fa-book"></i>
 						<p>
 							Subjects
