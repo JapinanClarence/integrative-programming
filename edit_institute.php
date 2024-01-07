@@ -30,7 +30,7 @@ include(__DIR__ . "/partials/head.php");
 			<div class="container-fluid">
 				<div class="px-2">
 					<div class="d-flex justify-content-end mb-3">
-						<a class="btn-sm" href="course.php">
+						<a class="btn-sm" href="institute.php">
 							Back
 							<i class="fas fa-solid fa-arrow-left ml-2 text-center"></i>
 						</a>
@@ -56,15 +56,7 @@ include(__DIR__ . "/partials/head.php");
 							<textarea name="description" id="description" class="form-control" cols="30" rows="10"></textarea>
 						</div>
 					</div>
-					<div class="row mb-3">
-						<label for="institute" class="col-sm-1 col-form-label">Institute</label>
-						<div class="col-sm-11">
-							<select class="form-control" id="institute" name="institute" required>
-								<option value="default">Select Institute...</option>
-							</select>
-						</div>
-					</div>
-					<button type="submit" class="btn btn-sm btn-primary mb-3" id="submit">Update Course</button>
+					<button type="submit" class="btn btn-sm btn-primary mb-3" id="submit">Update Institute</button>
 				</form>
 			</div>
 		</div>
@@ -74,17 +66,6 @@ include(__DIR__ . "/partials/head.php");
 <script>
 	$(function() {
 
-		$.ajax({
-			type: "GET",
-			url: `./php/controller/admin/institute.php`,
-			success: function(res) {
-				console.log(res);
-				res.data.map((data) => {
-					$("#institute").append(`<option value="${data.slug}">${data.slug}</option>`);
-				});
-			},
-			error: handleError,
-		});
 		// Function to get URL parameters
 		function getUrlParameter(name) {
 			name = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]');
@@ -96,7 +77,7 @@ include(__DIR__ . "/partials/head.php");
 		// Get the student ID from the URL parameter
 		const id = getUrlParameter('id');
 
-		const url = `./php/controller/admin/course.php?id=${id}`;
+		const url = `./php/controller/admin/institute.php?id=${id}`;
 		$.ajax({
 			type: "GET",
 			url: url,
@@ -116,10 +97,9 @@ include(__DIR__ . "/partials/head.php");
 				title: $("#title").val().trim(),
 				slug: $("#slug").val(),
 				description: $("#description").val().trim(),
-				institute: $("#institute").val()
 			};
 
-			const url = `./php/controller/admin/course.php?id=${id}`;
+			const url = `./php/controller/admin/institute.php?id=${id}`;
 			$.ajax({
 				type: "PATCH",
 				url: url,
