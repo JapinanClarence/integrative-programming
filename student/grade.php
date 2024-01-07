@@ -97,7 +97,7 @@ include(__DIR__ . "/partials/head.php");
 		const generateRowMarkup = (data) => {
 			const grade = !data.grades ? "text-secondary" : "text-dark";
 			const registerdAt = formatDateTime(data.created_at);
-			return `<tr onclick=window.location='subject.php?code=${data.subject_code}'>
+			return `<tr'>
 				<td class="align-middle">${data.subject_code}</td>
 				<td class="align-middle ${grade}">${data.grades}</td>
 				<td class="align-middle">${data.faculty}</td>
