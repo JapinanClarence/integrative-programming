@@ -9,7 +9,6 @@ use model\FacultyModel;
 use model\StudentModel;
 use model\SubjectModel;
 use model\SchoolYearModel;
-use middleware\AuthMiddleware;
 use model\FacultySubjectsModel;
 
 require_once(__DIR__ . "/../../model/SubjectModel.php");
@@ -17,15 +16,12 @@ require_once(__DIR__ . "/../../model/FacultyModel.php");
 require_once(__DIR__ . "/../../model/GradesModel.php");
 require_once(__DIR__ . "/../../model/StudentModel.php");
 require_once(__DIR__ . "/../../model/FacultySubjectsModel.php");
-require_once(__DIR__ . "/../../middleware/AuthMiddleware.php");
 require_once(__DIR__ . "/../Controller.php");
 
 class Grades extends Controller
 {
-	private $authResult;
 	public function __construct()
 	{
-		$this->authResult = AuthMiddleware::authenticate();
 
 		Controller::verifyRole($this->authResult, Controller::FACULTY_ROLE);
 		$requestMethod = $_SERVER["REQUEST_METHOD"];
@@ -44,7 +40,7 @@ class Grades extends Controller
 					break;
 				}
 			default: {
-					response(400, false, ["message" => "Request method: {$requestMethod} not allowed!"]);
+					response(false, ["message" => "Request method: {$requestMethod} not allowed!"]);
 					break;
 				}
 		}
@@ -55,14 +51,14 @@ class Grades extends Controller
 		$id = isset($_GET["id"]) ? $_GET["id"] : null;
 
 		if ($id !== $this->authResult) {
-			response(403, false, ["message" => "Unauthorized"]);
+			response(false, ["message" => "Unauthorized"]);
 			exit;
 		}
 
 		$faculty = FacultyModel::find($id, "user_id");
 
 		if (!$faculty) {
-			response(404, false, ["message" => "Faculty not found!"]);
+			response(false, ["message" => "Faculty not found!"]);
 			exit;
 		}
 
@@ -71,7 +67,7 @@ class Grades extends Controller
 		$subject = SubjectModel::find($code, "code");
 
 		if (!$subject) {
-			response(404, false, ["message" => "Subject not found!"]);
+			response(false, ["message" => "Subject not found!"]);
 			exit;
 		}
 		// $facultyName = $faculty["first_name"] . " " . $faculty["middle_name"] . " " . $faculty["last_name"];
@@ -83,7 +79,7 @@ class Grades extends Controller
 		], true);
 
 		if (!$fetchAssignedStudents) {
-			response(200, true, ["message" => "No enrolled students currently!"]);
+			response(true, ["message" => "No enrolled students currently!"]);
 			exit;
 		}
 		//initialized return data
@@ -105,14 +101,14 @@ class Grades extends Controller
 			];
 		}
 
-		response(200, true, ["data" => $returnData]);
+		response(true, ["data" => $returnData]);
 	}
 	public function all()
 	{
 		$id = isset($_GET["id"]) ? $_GET["id"] : null;
 
 		if ($id !== $this->authResult) {
-			response(403, false, ["message" => "Unauthorized"]);
+			response(false, ["message" => "Unauthorized"]);
 			exit;
 		}
 
@@ -121,7 +117,7 @@ class Grades extends Controller
 		$results = FacultySubjectsModel::find($faculty, "faculty_id", true);
 
 		if (!$results) {
-			response(200, false, ["message" => "No registered subjects currently"]);
+			response(false, ["message" => "No registered subjects currently"]);
 			exit;
 		}
 
@@ -148,7 +144,7 @@ class Grades extends Controller
 
 		$numRows = count($results);
 
-		response(200, true, ["row_count" => $numRows, "data" => $returnData]);
+		response(true, ["row_count" => $numRows, "data" => $returnData]);
 	}
 	public function addGrades()
 	{
@@ -156,14 +152,14 @@ class Grades extends Controller
 		$id = isset($_GET["id"]) ? $_GET["id"] : null;
 
 		if ($id !== $this->authResult) {
-			response(403, false, ["message" => "Unauthorized"]);
+			response(false, ["message" => "Unauthorized"]);
 			exit;
 		}
 
 		$faculty = FacultyModel::find($id, "user_id");
 
 		if (!$faculty) {
-			response(404, false, ["message" => "Faculty not found!"]);
+			response(false, ["message" => "Faculty not found!"]);
 			exit;
 		}
 
@@ -172,7 +168,7 @@ class Grades extends Controller
 		$subject = SubjectModel::find($code, "code");
 
 		if (!$subject) {
-			response(404, false, ["message" => "Subject not found!"]);
+			response(false, ["message" => "Subject not found!"]);
 			exit;
 		}
 
@@ -190,7 +186,7 @@ class Grades extends Controller
 		]);
 
 		if (!$fetchAssignedStudents) {
-			response(404, false, ["message" => "Student not found!"]);
+			response(false, ["message" => "Student not found!"]);
 			exit;
 		}
 
@@ -201,7 +197,7 @@ class Grades extends Controller
 			exit;
 		}
 
-		response(200, true, ["message" => "Successfully added grades"]);
+		response(true, ["message" => "Successfully added grades"]);
 	}
 }
 new Grades();

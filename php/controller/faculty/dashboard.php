@@ -5,29 +5,24 @@ namespace api\admin;
 use api\Controller;
 use model\UserModel;
 use model\CourseModel;
+use model\GradesModel;
 use model\FacultyModel;
 use model\StudentModel;
-use middleware\AuthMiddleware;
+use model\SchoolYearModel;
 use model\FacultySubjectsModel;
-use model\GradesModel;
 
 require_once(__DIR__ . "/../../model/CourseModel.php");
 require_once(__DIR__ . "/../../model/FacultyModel.php");
 require_once(__DIR__ . "/../../model/StudentModel.php");
 require_once(__DIR__ . "/../../model/FacultySubjectsModel.php");
 require_once(__DIR__ . "/../../model/GradesModel.php");
-require_once(__DIR__ . "/../../middleware/AuthMiddleware.php");
+require_once(__DIR__ . "/../../model/SchoolYearModel.php");
 require_once(__DIR__ . "/../Controller.php");
 
 class Dashboard extends Controller
 {
-	private $authResult;
 	public function __construct()
 	{
-		$this->authResult = AuthMiddleware::authenticate();
-		//verify user role
-		Controller::verifyRole($this->authResult, Controller::FACULTY_ROLE);
-
 		$requestMethod = $_SERVER["REQUEST_METHOD"];
 
 		switch ($requestMethod) {
@@ -38,7 +33,7 @@ class Dashboard extends Controller
 				}
 
 			default: {
-					response(400, false, ["message" => "Request method: {$requestMethod} not allowed!"]);
+					response(false, ["message" => "Request method: {$requestMethod} not allowed!"]);
 					break;
 				}
 		}
@@ -47,33 +42,40 @@ class Dashboard extends Controller
 	{
 		$id = isset($_GET["id"]) ? $_GET["id"] : null;
 
-		if ($id !== $this->authResult) {
-			response(403, false, ["message" => "Unauthorized"]);
-			exit;
-		}
-
 		$faculty = FacultyModel::fetchId($id, "user_id")["faculty_id"];
 
 		$results = FacultySubjectsModel::find($faculty, "faculty_id", true);
 
 		if (!$results) {
-			response(200, false, ["message" => "No registered subjects currently"]);
+			response(false, ["message" => "No registered subjects currently"]);
 			exit;
 		}
 
+		$schoolYear = SchoolYearModel::find("1", "status");
+		$returnData = [];
+		$totalStudents = 0;
+
 		foreach ($results as $result) {
-			//fetch handled students
+			// fetch handled students
 			$handledStudents = GradesModel::where([
 				"subject_code" => $result["subject_code"],
 				"faculty_id" => $faculty
 			], true);
 
-			//count students by subjects
+			// count students by subjects
 			$studentCountBySub = count($handledStudents);
 
+			// add the count to returnData
 			$returnData[$result["subject_code"]] = $studentCountBySub;
+
+			// update total students count
+			$totalStudents += $studentCountBySub;
 		}
-		response(200, true, ["data" => $returnData]);
+
+		// calculate the total number of subjects handled
+		$totalSubjectsHandled = count($results);
+
+		response(true, ["data" => $returnData, "total_students" => $totalStudents, "total_subjects_handled" => $totalSubjectsHandled, "school_year" => $schoolYear["school_year"]]);
 	}
 }
 new Dashboard();

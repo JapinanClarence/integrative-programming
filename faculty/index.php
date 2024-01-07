@@ -40,7 +40,7 @@ include(__DIR__ . "/partials/head.php");
 									<div class="inner">
 										<h3 id="studentCount">0</h3>
 
-										<p>Total Students</p>
+										<p>Total Students Handled</p>
 									</div>
 									<div class="icon">
 										<i class="fas fa-solid fa-user-graduate"></i>
@@ -53,46 +53,13 @@ include(__DIR__ . "/partials/head.php");
 							<!-- ./col -->
 							<div class="">
 								<!-- small card -->
-								<div class="small-box bg-success">
-									<div class="inner">
-										<h3 id="facultyCount"></h3>
-
-										<p>Total Faculties</p>
-									</div>
-									<div class="icon">
-										<i class="fas fa-solid fa-user-tie"></i>
-									</div>
-									<div class="small-box-footer" style="height: 10px;">
-
-									</div>
-								</div>
-							</div>
-							<!-- ./col -->
-							<div class="">
-								<!-- small card -->
 								<div class="small-box bg-warning">
 									<div class="inner text-white">
 										<h3 id="subjectCount"></h3>
-										<p>Total Subjects</p>
+										<p>Total Subjects Handled</p>
 									</div>
 									<div class="icon">
 										<i class="fas fa-solid fa-book"></i>
-									</div>
-									<div class="small-box-footer" style="height: 10px;">
-
-									</div>
-								</div>
-							</div>
-							<div class="">
-								<!-- small card -->
-								<div class="small-box bg-danger">
-									<div class="inner">
-										<h3 id="coursesCount"></h3>
-
-										<p>Total Courses</p>
-									</div>
-									<div class="icon">
-										<i class="fas fa-solid fa-graduation-cap"></i>
 									</div>
 									<div class="small-box-footer" style="height: 10px;">
 
@@ -103,15 +70,9 @@ include(__DIR__ . "/partials/head.php");
 					</div>
 					<div class="col-lg-9 col-md-9">
 						<div class="d-flex flex-column">
-							<h4>Total Students by Institute</h4>
-							<div class="mb-2">
-								<ul id="student_list" class="list-group">
-
-								</ul>
-							</div>
-							<h4>Total Students by Course</h4>
+							<h4>Total Students by Subject</h4>
 							<div class="" style="height: 200px; overflow-y:auto;">
-								<ul id="course_list" class="list-group">
+								<ul id="student_list" class="list-group">
 
 								</ul>
 							</div>
@@ -132,12 +93,13 @@ include(__DIR__ . "/partials/head.php");
 <!-- ./wrapper -->
 <script>
 	$(function() {
+		const facultyId = JSON.parse(localStorage.getItem("user"));
 		// Initial load of table data
 		refreshTable();
 
 		// Function to refresh the table
 		function refreshTable() {
-			const url = "./php/controller/admin/dashboard.php";
+			const url = `./../php/controller/faculty/dashboard.php?id=${facultyId.user_id}`;
 
 			$.ajax({
 				type: "GET",
@@ -147,29 +109,20 @@ include(__DIR__ . "/partials/head.php");
 					// Clear existing table rows
 					$("#table-body").empty();
 
-					const studentCount = !res.student_count ? 0 : res.student_count;
-					const facultyCount = !res.faculty_count ? 0 : res.faculty_count;
-					const courseCount = !res.total_course ? 0 : res.total_course;
-					const subjectCount = !res.total_subject ? 0 : res.total_subject;
+					const studentCount = !res.total_students ? 0 : res.total_students;
+					const subjectCount = !res.total_subjects_handled ? 0 : res.total_subjects_handled;
 
 					if (res.success) {
 						$("#studentCount").text(studentCount);
-						$("#facultyCount").text(facultyCount);
-						$("#coursesCount").text(courseCount);
 						$("#subjectCount").text(subjectCount);
 						$("#school_year").text(res.school_year);
 
-						$.each(res.student_count_by_institute, function(institute, count) {
+						$.each(res.data, function(subject, count) {
 							// Create list item and append to the list
-							var listItem = $('<li class="list-group-item"><span class="font-weight-bold">' + institute + ':</span> ' + count + '</li>');
+							var listItem = $('<li class="list-group-item"><span class="font-weight-bold">' + subject + ':</span> ' + count + '</li>');
 							$('#student_list').append(listItem);
 						});
 
-						$.each(res.student_count_by_course, function(course, count) {
-							// Create list item and append to the list
-							var listItem = $('<li class="list-group-item"><span class="font-weight-bold">' + course + ':</span> ' + count + '</li>');
-							$('#course_list').append(listItem);
-						});
 					}
 				},
 				error: handleError
