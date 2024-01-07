@@ -11,9 +11,9 @@ require_once(__DIR__ . "/../util/util.php");
 class Database
 {
 	private const DB_HOST = "localhost";
-	private const DB_NAME = "my_project";
-	private const DB_USERNAME = "root";
-	private const DB_PASSWORD = "";
+	private const DB_NAME = "u557880975_integrativefp";
+	private const DB_USERNAME = "u557880975_integrativefp";
+	private const DB_PASSWORD = "int3grative_Fp";
 
 	public static function connect()
 	{
