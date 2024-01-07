@@ -53,7 +53,7 @@
 					</a>
 				</li>
 				<li class="nav-item">
-					<a href="#" class="nav-link">
+					<a href="course.php" class="nav-link">
 						<i class="nav-icon fas fa-solid fa-graduation-cap"></i>
 						<p>
 							Course
@@ -61,7 +61,7 @@
 					</a>
 				</li>
 				<li class="nav-item">
-					<a href="#" class="nav-link">
+					<a href="institute.php" class="nav-link">
 						<i class="nav-icon fas fa-solid fa-building"></i>
 						<p>
 							Institute
@@ -69,7 +69,7 @@
 					</a>
 				</li>
 				<li class="nav-item">
-					<a href="#" class="nav-link">
+					<a href="school_year.php" class="nav-link">
 						<i class="nav-icon fas fa-solid fa-calendar"></i>
 						<p>
 							School Year
@@ -77,7 +77,7 @@
 					</a>
 				</li>
 				<li class="nav-item">
-					<a href="#" class="nav-link">
+					<a href="grade.php" class="nav-link">
 						<i class="nav-icon fas fa-solid fa-chart-line"></i>
 						<p>
 							Grade

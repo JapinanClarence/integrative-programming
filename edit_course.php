@@ -17,7 +17,7 @@ include(__DIR__ . "/partials/head.php");
 					<div class="col-sm-6">
 						<ol class="breadcrumb float-sm-right">
 							<li class="breadcrumb-item"><a href="#">Home</a></li>
-							<li class="breadcrumb-item active">Register Faculty</li>
+							<li class="breadcrumb-item active">Register Course</li>
 						</ol>
 					</div><!-- /.col -->
 				</div><!-- /.row -->
@@ -30,7 +30,7 @@ include(__DIR__ . "/partials/head.php");
 			<div class="container-fluid">
 				<div class="px-2">
 					<div class="d-flex justify-content-end mb-3">
-						<a class="btn-sm" href="subjects.php">
+						<a class="btn-sm" href="course.php">
 							Back
 							<i class="fas fa-solid fa-arrow-left ml-2 text-center"></i>
 						</a>
@@ -39,28 +39,32 @@ include(__DIR__ . "/partials/head.php");
 				</div>
 				<form id="update-form">
 					<div class="row mb-3">
+						<label for="title" class="col-sm-1 col-form-label">Title</label>
+						<div class="col-sm-11">
+							<input type="text" class="form-control" id="title" name="title" required>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label for="slug" class="col-sm-1 col-form-label">Slug</label>
+						<div class="col-sm-11">
+							<input type="text" class="form-control" id="slug" name="slug" required>
+						</div>
+					</div>
+					<div class="row mb-3">
 						<label for="description" class="col-sm-1 col-form-label">Description</label>
 						<div class="col-sm-11">
-							<input type="text" class="form-control" id="description" name="description" required>
+							<textarea name="description" id="description" class="form-control" cols="30" rows="10"></textarea>
 						</div>
 					</div>
 					<div class="row mb-3">
-						<label for="unit" class="col-sm-1 col-form-label">Unit</label>
+						<label for="institute" class="col-sm-1 col-form-label">Institute</label>
 						<div class="col-sm-11">
-							<input type="number" class="form-control" id="unit" name="unit" required>
-						</div>
-					</div>
-					<div class="row mb-3">
-						<label for="type" class="col-sm-1 col-form-label">Subject Type</label>
-						<div class="col-sm-11">
-							<select class="form-control" id="type" name="type" required>
-								<option value="lecture">Lecture</option>
-								<option value="laboratory">Laboratory</option>
-								<option value="lecture & laboratory">Lecture & Laboratory</option>
+							<select class="form-control" id="institute" name="institute" required>
+								<option value="default">Select Institute...</option>
 							</select>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-sm btn-primary" id="submit">Udpate Subject</button>
+					<button type="submit" class="btn btn-sm btn-primary mb-3" id="submit">Register Course</button>
 				</form>
 			</div>
 		</div>
@@ -69,6 +73,18 @@ include(__DIR__ . "/partials/head.php");
 </div>
 <script>
 	$(function() {
+
+		$.ajax({
+			type: "GET",
+			url: `./php/controller/admin/institute.php`,
+			success: function(res) {
+				console.log(res);
+				res.data.map((data) => {
+					$("#institute").append(`<option value="${data.slug}">${data.slug}</option>`);
+				});
+			},
+			error: handleError,
+		});
 		// Function to get URL parameters
 		function getUrlParameter(name) {
 			name = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]');
@@ -78,18 +94,16 @@ include(__DIR__ . "/partials/head.php");
 		}
 
 		// Get the student ID from the URL parameter
-		const subject_code = getUrlParameter('id');
+		const id = getUrlParameter('id');
 
-		const url = `./php/controller/admin/subject.php?code=${subject_code}`;
+		const url = `./php/controller/admin/course.php?id=${id}`;
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function(res) {
-				$("#code").val(res.code);
+				$("#title").val(res.title);
+				$("#slug").val(res.slug);
 				$("#description").val(res.description);
-				$("#unit").val(res.unit);
-				$("#type").val(res.type);
-
 			},
 			error: handleError,
 		});
@@ -99,12 +113,13 @@ include(__DIR__ . "/partials/head.php");
 
 			//gather form data
 			const formData = {
-				description: $("#description").val(),
-				unit: $("#unit").val(),
-				type: $("#type").val(),
+				title: $("#title").val().trim(),
+				slug: $("#slug").val(),
+				description: $("#description").val().trim(),
+				institute: $("#institute").val()
 			};
 
-			const url = `./php/controller/admin/subject.php?code=${subject_code}`;
+			const url = `./php/controller/admin/course.php?id=${id}`;
 			$.ajax({
 				type: "PATCH",
 				url: url,
@@ -113,6 +128,27 @@ include(__DIR__ . "/partials/head.php");
 				success: function(res) {
 					showToast("success", "Update successfull");
 				},
+				error: handleError,
+			});
+		});
+		$("#registration-form").on("submit", function(e) {
+			e.preventDefault();
+
+			//gather form data
+			const formData = {
+				title: $("#title").val().trim(),
+				slug: $("#slug").val(),
+				description: $("#description").val().trim(),
+				institute: $("#institute").val()
+			};
+
+			const url = "./php/controller/admin/course.php";
+			$.ajax({
+				type: "POST",
+				url: url,
+				contentType: "application/json",
+				data: JSON.stringify(formData),
+				success: handleSuccess,
 				error: handleError,
 			});
 		});
