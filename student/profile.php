@@ -104,14 +104,14 @@ include(__DIR__ . "/partials/head.php");
 						", " +
 						res.province;
 
-					const averageGrade = !res.average_grade ? 0 : res.average_grade;
+					const averageGrade = !res.average_grade ? "0" : res.average_grade;
 
 					$("#email").text(res.email);
 					$("#contact_number").text(res.contact_number);
 					$("#fullname").text(fullname);
 					$("#address").text(address);
 					$("#course").text(res.course);
-					$("#grade").text(res.average_grade);
+					$("#grade").text(averageGrade);
 				}
 			},
 			error: handleError
