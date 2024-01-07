@@ -39,9 +39,10 @@ include(__DIR__ . "/partials/head.php");
 						<thead class="thead-dark">
 							<tr>
 								<th scope="col">Code</th>
-								<th scope="col">Grade</th>
-								<th scope="col">Faculty</th>
-								<th scope="col">Enrolled At</th>
+								<th scope="col">Description</th>
+								<th scope="col">Unit</th>
+								<th scope="col">Type</th>
+								<th scope="col">Registered At</th>
 							</tr>
 						</thead>
 						<form id="delete-form">
@@ -107,13 +108,13 @@ include(__DIR__ . "/partials/head.php");
 
 		const generateRowMarkup = (data) => {
 
-			const grade = !data.grades ? "text-secondary" : "text-dark";
-
+			const registerdAt = formatDateTime(data.created_at);
 			return `<tr>
 				<td class="align-middle">${data.subject_code}</td>
-				<td class="align-middle ${grade}">${data.grades}</td>
-				<td class="align-middle">${data.faculty}</td>
-				<td class="align-middle">${data.created_at}</td>
+				<td class="align-middle">${data.description}</td>
+				<td class="align-middle">${data.unit}</td>
+				<td class="align-middle">${data.type}</td>
+				<td class="align-middle">${registerdAt}</td>
 			</tr>`;
 		};
 		// Success handler

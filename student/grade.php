@@ -96,12 +96,12 @@ include(__DIR__ . "/partials/head.php");
 
 		const generateRowMarkup = (data) => {
 			const grade = !data.grades ? "text-secondary" : "text-dark";
-
+			const registerdAt = formatDateTime(data.created_at);
 			return `<tr onclick=window.location='subject.php?code=${data.subject_code}'>
 				<td class="align-middle">${data.subject_code}</td>
 				<td class="align-middle ${grade}">${data.grades}</td>
 				<td class="align-middle">${data.faculty}</td>
-				<td class="align-middle">${data.created_at}</td>
+				<td class="align-middle">${registerdAt}</td>
                 </tr>`;
 		};
 
@@ -116,6 +116,27 @@ include(__DIR__ . "/partials/head.php");
 			}
 		}
 
+		//format date time
+		function formatDateTime(inputDateTime) {
+			// Parse the input datetime string
+			const parsedDateTime = new Date(inputDateTime);
+
+			// Extract components of the date and time
+			const year = parsedDateTime.getFullYear();
+			const month = (parsedDateTime.getMonth() + 1).toString().padStart(2, "0"); // Month is zero-indexed, so add 1
+			const day = parsedDateTime.getDate().toString().padStart(2, "0");
+			const hours = parsedDateTime.getHours().toString().padStart(2, "0");
+			const minutes = parsedDateTime.getMinutes().toString().padStart(2, "0");
+			const ampm = parsedDateTime.getHours() >= 12 ? "pm" : "am";
+
+			// Adjust hours for 12-hour format
+			const formattedHours = parsedDateTime.getHours() % 12 || 12;
+
+			// Construct the formatted datetime string
+			const formattedDateTime = `${month}/${day}/${year} ${formattedHours}:${minutes}${ampm}`;
+
+			return formattedDateTime;
+		}
 		// Your existing error handler
 		function handleError(err) {
 			console.log(err);

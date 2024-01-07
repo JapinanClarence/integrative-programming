@@ -7,11 +7,12 @@ use model\FacultyModel;
 use model\GradesModel;
 use model\SchoolYearModel;
 use model\StudentModel;
+use model\SubjectModel;
 use model\UserModel;
 
 require_once(__DIR__ . "/../../model/CourseModel.php");
 require_once(__DIR__ . "/../../model/GradesModel.php");
-require_once(__DIR__ . "/../../model/FacultyModel.php");
+require_once(__DIR__ . "/../../model/SubjectModel.php");
 require_once(__DIR__ . "/../../model/UserModel.php");
 require_once(__DIR__ . "/../../model/StudentModel.php");
 require_once(__DIR__ . "/../Controller.php");
@@ -47,19 +48,14 @@ class Dashboard extends Controller
 
 		foreach ($subjects as $subject) {
 
-			$faculty = FacultyModel::fetchId($subject["faculty_id"], "faculty_id");
-
-			$facultyname = UserModel::find($faculty["user_id"], "user_id");
-
-			//trim the first word of the middlename
-			$middlename = substr($facultyname["middle_name"], 0, 1) . ".";
-			$fullname = $facultyname["first_name"] . " " . $middlename . " " . $facultyname["last_name"];
+			$subject = SubjectModel::find($subject["subject_code"], "code");
 
 			$returnData[] = [
-				"subject_code" => $subject["subject_code"],
-				"grades" => $subject["grades"],
-				"created_at" => $subject["created_at"],
-				"faculty" => $fullname
+				"subject_code" => $subject["code"],
+				"description" => $subject["description"],
+				"unit" => $subject["unit"],
+				"type" => $subject["type"],
+				"created_at" => $subject["created_at"]
 			];
 		}
 
