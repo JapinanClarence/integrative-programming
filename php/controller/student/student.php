@@ -45,23 +45,24 @@ class Student extends Controller
 
 		$grades = GradesModel::find($results["student_id"], "student_id", true);
 
+		// Check if grades is null or empty
 		if (!$grades) {
-			response(false, ["message" => "No enrolled subjects"]);
-			exit;
+			// If no enrolled subjects, set total_grade and average_grade to null
+			$totalGrade = null;
+			$averageGrade = null;
+		} else {
+			$totalGrade = 0; // Initialize totalGrade to 0
+
+			foreach ($grades as $grade) {
+				$totalGrade += $grade["grades"]; // Accumulate grades for total calculation
+			}
+
+			// Assuming $grades is an array, use count($grades) to get the number of subjects
+			$numberOfSubjects = count($grades);
+
+			// Calculate the average grade
+			$averageGrade = $numberOfSubjects > 0 ? $totalGrade / $numberOfSubjects : 0;
 		}
-
-		$totalGrade = 0; // Initialize totalGrade to 0
-
-		foreach ($grades as $grade) {
-
-			$totalGrade += $grade["grades"]; // Accumulate grades for total calculation
-		}
-
-		// Assuming $grades is an array, use count($grades) to get the number of subjects
-		$numberOfSubjects = count($grades);
-
-		// Calculate the average grade
-		$averageGrade = $numberOfSubjects > 0 ? $totalGrade / $numberOfSubjects : 0;
 
 		$responseData = $results;
 		// If you want to keep the total grade and average grade in the response, you can do this:

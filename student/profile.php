@@ -103,6 +103,9 @@ include(__DIR__ . "/partials/head.php");
 						res.municipality +
 						", " +
 						res.province;
+
+					const averageGrade = !res.average_grade ? 0 : res.average_grade;
+
 					$("#email").text(res.email);
 					$("#contact_number").text(res.contact_number);
 					$("#fullname").text(fullname);
