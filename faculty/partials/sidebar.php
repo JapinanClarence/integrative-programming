@@ -29,7 +29,7 @@
 					</a>
 				</li>
 				<li class="nav-item">
-					<a href="student.php" class="nav-link">
+					<a href="students.php" class="nav-link">
 						<i class="nav-icon fas fa-solid fa-user-graduate"></i>
 						<p>
 							Student

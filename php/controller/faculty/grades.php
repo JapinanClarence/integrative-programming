@@ -16,6 +16,7 @@ require_once(__DIR__ . "/../../model/FacultyModel.php");
 require_once(__DIR__ . "/../../model/GradesModel.php");
 require_once(__DIR__ . "/../../model/StudentModel.php");
 require_once(__DIR__ . "/../../model/FacultySubjectsModel.php");
+require_once(__DIR__ . "/../../model/UserModel.php");
 require_once(__DIR__ . "/../Controller.php");
 
 class Grades extends Controller
@@ -23,7 +24,6 @@ class Grades extends Controller
 	public function __construct()
 	{
 
-		Controller::verifyRole($this->authResult, Controller::FACULTY_ROLE);
 		$requestMethod = $_SERVER["REQUEST_METHOD"];
 
 		switch ($requestMethod) {
@@ -106,11 +106,6 @@ class Grades extends Controller
 	public function all()
 	{
 		$id = isset($_GET["id"]) ? $_GET["id"] : null;
-
-		if ($id !== $this->authResult) {
-			response(false, ["message" => "Unauthorized"]);
-			exit;
-		}
 
 		$faculty = FacultyModel::fetchId($id, "user_id")["faculty_id"];
 

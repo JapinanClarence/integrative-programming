@@ -15,13 +15,14 @@
 	function checkLoggedIn() {
 		const userData = JSON.parse(localStorage.getItem("user"));
 
-
+		// console.log(userData.role);
 		if (userData) {
-			if (userData.role !== 0) {
-				window.locataion.href = "login.php";
+
+			if (userData.role !== "1") {
+				window.location.href = "../login.php";
 			}
 		} else {
-			window.locataion.href = "login.php";
+			window.location.href = "../login.php";
 		}
 
 	}
