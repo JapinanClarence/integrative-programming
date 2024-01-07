@@ -50,11 +50,6 @@ class Grades extends Controller
 	{
 		$id = isset($_GET["id"]) ? $_GET["id"] : null;
 
-		if ($id !== $this->authResult) {
-			response(false, ["message" => "Unauthorized"]);
-			exit;
-		}
-
 		$faculty = FacultyModel::find($id, "user_id");
 
 		if (!$faculty) {
@@ -79,7 +74,7 @@ class Grades extends Controller
 		], true);
 
 		if (!$fetchAssignedStudents) {
-			response(true, ["message" => "No enrolled students currently!"]);
+			response(false, ["message" => "No enrolled students currently!"]);
 			exit;
 		}
 		//initialized return data
@@ -146,11 +141,6 @@ class Grades extends Controller
 
 		$id = isset($_GET["id"]) ? $_GET["id"] : null;
 
-		if ($id !== $this->authResult) {
-			response(false, ["message" => "Unauthorized"]);
-			exit;
-		}
-
 		$faculty = FacultyModel::find($id, "user_id");
 
 		if (!$faculty) {
@@ -170,7 +160,7 @@ class Grades extends Controller
 		$data = json_decode(file_get_contents("php://input"));
 		Controller::verifyJsonData($data);
 
-		$studentId = $data->student_id;
+		$studentId = $data->studentId;
 		$grades = $data->grade;
 
 		//fetch students based on enrolled subject and faculty
@@ -188,7 +178,7 @@ class Grades extends Controller
 		$result = GradesModel::addGrades($code, $studentId, $faculty["faculty_id"], $grades);
 
 		if (!$result) {
-			response(400, false, ["message" => "Failed to add grades"]);
+			response(false, ["message" => "Failed to add grades"]);
 			exit;
 		}
 

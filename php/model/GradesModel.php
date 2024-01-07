@@ -36,7 +36,7 @@ class GradesModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -71,7 +71,7 @@ class GradesModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -107,7 +107,7 @@ class GradesModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -136,7 +136,7 @@ class GradesModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -162,7 +162,7 @@ class GradesModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -205,7 +205,7 @@ class GradesModel
 			return $result;
 		} catch (Exception $e) {
 			$responseMessage = "Error: {$e->getMessage()} on line {$e->getLine()}";
-			response(500, false, ["message" => $responseMessage]);
+			response(false, ["message" => $responseMessage]);
 			exit;
 		}
 	}
@@ -291,7 +291,7 @@ class GradesModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
@@ -299,7 +299,7 @@ class GradesModel
 	{
 		try {
 			//query statement
-			$query = "UPDATE " . self::TABLE . "SET grades = :grades WHERE student_id = :studentId AND subject_code = :subjectCode AND faculty_id = :facultyId";
+			$query = "UPDATE " . self::TABLE . " SET grades = :grades WHERE student_id = :studentId AND subject_code = :subjectCode AND faculty_id = :facultyId";
 
 			//prepared statement
 			$stmt = Database::connect()->prepare($query);
@@ -316,7 +316,7 @@ class GradesModel
 			$response = [
 				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
 			];
-			response(500, false, $response);
+			response(false, $response);
 			exit;
 		}
 	}
