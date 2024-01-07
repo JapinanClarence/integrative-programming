@@ -14,7 +14,7 @@
 				<img src="./../asset/img/user-profile.png" class="img-circle elevation-2" alt="User Image">
 			</div>
 			<div class="info">
-				<a id="user-profile" href="#" class="d-block">Admin</a>
+				<a id="user-profile" href="profile.php" class="d-block">Admin</a>
 			</div>
 		</div>
 		<!-- Sidebar Menu -->
@@ -25,14 +25,6 @@
 						<i class="nav-icon fas fa-tachometer-alt"></i>
 						<p>
 							Dashboard
-						</p>
-					</a>
-				</li>
-				<li class="nav-item">
-					<a href="students.php" class="nav-link">
-						<i class="nav-icon fas fa-solid fa-user-graduate"></i>
-						<p>
-							Student
 						</p>
 					</a>
 				</li>

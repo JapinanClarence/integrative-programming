@@ -40,10 +40,13 @@ class Student extends Controller
 			exit;
 		}
 
-
+		//trim the first word of the middlename
+		$middlename = substr($result["middle_name"], 0, 1) . ".";
+		$fullname = $result["first_name"] . " " . $middlename . " " . $result["last_name"];
 		$responseData = [
 			"message" => "Login successful",
 			"user_id" => $result["user_id"],
+			"username" => $fullname,
 			"role" => $result["role"],
 		];
 

@@ -105,6 +105,36 @@ class StudentModel
 			exit;
 		}
 	}
+	public static function findUserInfo($column, $fetchAll = false)
+	{
+		try {
+			//query statement
+			$query = "SELECT * FROM users JOIN students on students.user_id = users.user_id WHERE students.user_id = :userId";
+
+			//prepared statement
+			$stmt = Database::connect()->prepare($query);
+
+			$stmt->bindParam(":userId", $column);
+			$stmt->execute();
+			//verifies if there's a returned value
+			if ($stmt->rowCount() == 0) {
+				return null;
+				exit;
+			}
+			if ($fetchAll === true) {
+				$result = $stmt->fetchAll();
+			} else {
+				$result = $stmt->fetch();
+			}
+			return $result;
+		} catch (PDOException $e) {
+			$response = [
+				"message" => "Error: {$e->getMessage()} on line {$e->getLine()}"
+			];
+			response(false, $response);
+			exit;
+		}
+	}
 	/**
 	 * Perform fetch operation based on the condition
 	 * @return null if condition is not found
