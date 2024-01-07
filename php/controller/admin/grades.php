@@ -7,8 +7,6 @@ use model\UserModel;
 use model\GradesModel;
 use model\FacultyModel;
 use model\SubjectModel;
-use model\SchoolYearModel;
-use middleware\AuthMiddleware;
 use model\FacultySubjectsModel;
 use model\StudentModel;
 
@@ -17,25 +15,23 @@ require_once(__DIR__ . "/../../model/FacultyModel.php");
 require_once(__DIR__ . "/../../model/StudentModel.php");
 require_once(__DIR__ . "/../../model/FacultySubjectsModel.php");
 require_once(__DIR__ . "/../../model/GradesModel.php");
-require_once(__DIR__ . "/../../middleware/AuthMiddleware.php");
+require_once(__DIR__ . "/../../model/UserModel.php");
 require_once(__DIR__ . "/../Controller.php");
 
 class Grades extends Controller
 {
-	private $authResult;
 	public function __construct()
 	{
-		$this->authResult = AuthMiddleware::authenticate();
-		//verify user role
-		Controller::verifyRole($this->authResult, Controller::ADMIN_ROLE);
 		$requestMethod = $_SERVER["REQUEST_METHOD"];
 
 		switch ($requestMethod) {
 			case "POST": {
-					if (array_key_exists("id", $_GET) || !empty($_GET["id"]) && array_key_exists("action", $_GET) && ($_GET["action"] === "assign_faculty")) {
-						$this->assignFaculty();
-					} else if (array_key_exists("action", $_GET) && ($_GET["action"] === "assign_student")) {
-						$this->assignStudent();
+					if (array_key_exists("id", $_GET) && !empty($_GET["id"]) && array_key_exists("action", $_GET)) {
+						if ($_GET["action"] === "assign_faculty") {
+							$this->assignFaculty();
+						} elseif ($_GET["action"] === "assign_student") {
+							$this->assignStudent();
+						}
 					}
 					break;
 				}
@@ -59,13 +55,13 @@ class Grades extends Controller
 					if (array_key_exists("action", $_GET) && $_GET["action"] == "unenroll") {
 						// echo "2";
 						$this->unenrollStudent();
-					} else {
+					} else if (array_key_exists("id", $_GET) || !empty($_GET["id"]) && array_key_exists("code", $_GET) || !empty($_GET["code"])) {
 						$this->unassignFaculty();
 					}
 					break;
 				}
 			default: {
-					response(400, false, ["message" => "Request method: {$requestMethod} not allowed!"]);
+					response(false, ["message" => "Request method: {$requestMethod} not allowed!"]);
 					break;
 				}
 		}
@@ -77,38 +73,30 @@ class Grades extends Controller
 		Controller::verifyJsonData($data);
 
 		//set json data from request body
-		$code = isset($_GET["code"]) ? $_GET["code"] : null;
-
+		// $code = isset($_GET["code"]) ? $_GET["code"] : null;
+		$code = $data->code;
 		$facultyId = $data->facultyId;
 		$studentId = $data->studentId;
 
-		$facultyAssignedSubjects = FacultySubjectsModel::where([
-			"faculty_id" => $facultyId,
-			"subject_code" => $code
-		]);
-
-		if (!$facultyAssignedSubjects) {
-			response(200, false, ["message" => "Subject is not handled by the faculty chosen!"]);
-			exit;
-		}
 
 		$isStudentAssigned = GradesModel::where([
 			"faculty_id" => $facultyId,
-			"subject_code" => $code
+			"subject_code" => $code,
+			"student_id" => $studentId
 		]);
 
 		if ($isStudentAssigned) {
-			response(409, false, ["message" => "Student is already enrolled to this subject!"]);
+			response(false, ["message" => "Student is already enrolled to this subject!"]);
 			exit;
 		}
 
 		$result = GradesModel::create($code, $studentId, $facultyId);
 
 		if (!$result) {
-			response(400, false, ["message" => "Assignment Failed failed!"]);
+			response(false, ["message" => "Assignment Failed failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Assigned successfully!"]);
+			response(true, ["message" => "Assigned successfully!"]);
 		}
 	}
 
@@ -129,7 +117,7 @@ class Grades extends Controller
 		]);
 
 		if ($facultyAssignedSubjects) {
-			response(200, false, ["message" => "Subject is already assigned to faculty!"]);
+			response(false, ["message" => "Subject is already assigned to faculty!"]);
 			exit;
 		}
 
@@ -137,23 +125,23 @@ class Grades extends Controller
 		$result = FacultySubjectsModel::create($code, $facultyId);
 
 		if (!$result) {
-			response(400, false, ["message" => "Assignment Failed!"]);
+			response(false, ["message" => "Assignment Failed!"]);
 			exit;
 		} else {
-			response(201, true, ["message" => "Assigned successfully!"]);
+			response(true, ["message" => "Assigned successfully!"]);
 		}
 	}
 	public function all()
 	{
 		$results = FacultyModel::all();
 		if (!$results) {
-			response(200, false, ["message" => "No registered faculty currently"]);
+			response(false, ["message" => "No registered faculty currently"]);
 			exit;
 		}
 
 		$numRows = count($results);
 
-		response(200, true, ["row_count" => $numRows, "data" => $results]);
+		response(true, ["row_count" => $numRows, "data" => $results]);
 	}
 	public function facultySubjects()
 	{
@@ -163,7 +151,7 @@ class Grades extends Controller
 		$results = FacultySubjectsModel::find($facultyId, "faculty_id", true);
 
 		if (!$results) {
-			response(200, false, ["message" => "No registered subjects currently"]);
+			response(false, ["message" => "No registered subjects currently"]);
 			exit;
 		}
 
@@ -188,7 +176,7 @@ class Grades extends Controller
 
 		$numRows = count($results);
 
-		response(200, true, ["row_count" => $numRows, "data" => $returnData]);
+		response(true, ["row_count" => $numRows, "data" => $returnData]);
 	}
 	public function facultyUnassignedSubjects()
 	{
@@ -198,6 +186,7 @@ class Grades extends Controller
 
 		$subjects = SubjectModel::all();
 
+		$returnData = null;
 		//if faculty has no assigned subjects, iterate all subjects
 		if (!$results) {
 			foreach ($subjects as $subject) {
@@ -224,17 +213,17 @@ class Grades extends Controller
 				$returnData[] = $missingSubject;
 			}
 		}
-		response(200, true, ["data" => $returnData]);
+		response(true, ["data" => $returnData]);
 	}
 	public function fetchStudentRecords()
 	{
 		$facultyId = isset($_GET["id"]) ? $_GET["id"] : null;
-		$subjectCode = isset($_GET["subject_code"]) ? $_GET["subject_code"] : null;
-
+		$subjectCode = isset($_GET["code"]) ? $_GET["code"] : null;
+		// dd($subjectCode);
 		$results = FacultyModel::find($facultyId, "faculty_id");
 
 		if (!$results) {
-			response(404, false, ["message" => "Faculty not found!"]);
+			response(false, ["message" => "Faculty not found!"]);
 			exit;
 		}
 
@@ -245,7 +234,7 @@ class Grades extends Controller
 		], true);
 
 		if (!$fetchAssignedStudents) {
-			response(200, true, ["message" => "No enrolled students currently!"]);
+			response(true, ["message" => "No enrolled students currently!"]);
 			exit;
 		}
 		//initialized return data
@@ -267,7 +256,7 @@ class Grades extends Controller
 			];
 		}
 
-		response(200, true, ["data" => $returnData]);
+		response(true, ["data" => $returnData]);
 	}
 	public function fetchUnassignedStudents()
 	{
@@ -277,7 +266,7 @@ class Grades extends Controller
 		$results = FacultyModel::find($facultyId, "faculty_id");
 
 		if (!$results) {
-			response(404, false, ["message" => "Faculty not found!"]);
+			response(false, ["message" => "Faculty not found!"]);
 			exit;
 		}
 
@@ -324,7 +313,7 @@ class Grades extends Controller
 			}
 		}
 
-		response(200, true, ["data" => $returnData]);
+		response(true, ["data" => $returnData]);
 	}
 	private function getFacultyFullname($facultyUserId)
 	{
@@ -341,13 +330,14 @@ class Grades extends Controller
 		$faculty = FacultyModel::find($facultyId, "faculty_id");
 
 		if (!$faculty) {
-			response(404, false, ["message" => "Faculty is not found!"]);
+			response(false, ["message" => "Faculty is not found!"]);
 			exit;
 		}
 
 		$subject = SubjectModel::find($code, "code");
+
 		if (!$subject) {
-			response(404, false, ["message" => "Subject is not found!"]);
+			response(false, ["message" => "Subject is not found!"]);
 			exit;
 		}
 		// fetch students based on enrolled subject and faculty
@@ -357,17 +347,17 @@ class Grades extends Controller
 		], false, "AND");
 
 		if ($fetchAssignedStudents) {
-			response(200, true, ["message" => "Cannot unassign faculty, students are enrolled to the subject!"]);
+			response(true, ["message" => "Cannot unassign faculty, students are enrolled to the subject!"]);
 			exit;
 		}
 
 		$unassign = FacultySubjectsModel::unassign($facultyId, $code);
 
 		if (!$unassign) {
-			response(400, false, ["message" => "Failed to unassign faculty"]);
+			response(false, ["message" => "Failed to unassign faculty"]);
 			exit;
 		}
-		response(200, true, ["message" => "Successfully unassigned faculty!"]);
+		response(true, ["message" => "Successfully unassigned faculty!"]);
 	}
 	public function unenrollStudent()
 	{
@@ -377,24 +367,24 @@ class Grades extends Controller
 		$student = StudentModel::find($studentId, "student_id");
 
 		if (!$student) {
-			response(404, false, ["message" => "Student is not found!"]);
+			response(false, ["message" => "Student is not found!"]);
 			exit;
 		}
 
 		$subject = SubjectModel::find($code, "code");
 		if (!$subject) {
-			response(404, false, ["message" => "Subject is not found!"]);
+			response(false, ["message" => "Subject is not found!"]);
 			exit;
 		}
 
 		$unenroll = GradesModel::unenroll($studentId, $code);
 
 		if (!$unenroll) {
-			response(400, false, ["message" => "Failed to unenroll student!"]);
+			response(false, ["message" => "Failed to unenroll student!"]);
 			exit;
 		}
 
-		response(200, true, ["message" => "Student successfuly unenrolled!"]);
+		response(true, ["message" => "Student successfuly unenrolled!"]);
 	}
 }
 new Grades();
