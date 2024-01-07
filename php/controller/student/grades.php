@@ -3,24 +3,24 @@
 namespace api\admin;
 
 use api\Controller;
-use middleware\AuthMiddleware;
+use model\UserModel;
 use model\GradesModel;
+use model\FacultyModel;
+use model\StudentModel;
 
 require_once(__DIR__ . "/../../model/CourseModel.php");
 require_once(__DIR__ . "/../../model/InstituteModel.php");
 require_once(__DIR__ . "/../../model/GradesModel.php");
+require_once(__DIR__ . "/../../model/FacultyModel.php");
+require_once(__DIR__ . "/../../model/UserModel.php");
 require_once(__DIR__ . "/../../model/StudentModel.php");
-require_once(__DIR__ . "/../../middleware/AuthMiddleware.php");
 require_once(__DIR__ . "/../Controller.php");
 
 class Grades extends Controller
 {
-	private $authResult;
 	public function __construct()
 	{
-		$this->authResult = AuthMiddleware::authenticate();
 		//verify user role
-		Controller::verifyRole($this->authResult, Controller::STUDENT_ROLE);
 		$requestMethod = $_SERVER["REQUEST_METHOD"];
 
 		switch ($requestMethod) {
@@ -31,23 +31,45 @@ class Grades extends Controller
 					break;
 				}
 			default: {
-					response(400, false, ["message" => "Request method: {$requestMethod} not allowed!"]);
+					response(false, ["message" => "Request method: {$requestMethod} not allowed!"]);
 					break;
 				}
 		}
 	}
 	public function show()
 	{
-		$studentId = isset($_GET["id"]) ? $_GET["id"] : null;
+		$userId = isset($_GET["id"]) ? $_GET["id"] : null;
 
-		$results = GradesModel::find($studentId, "student_id", true);
+		$studentId = StudentModel::findUserInfo($userId, "student_id");
 
-		if (!$results) {
-			response(404, false, ["message" => "No subject enrolled"]);
+		$subjects = GradesModel::find($studentId["student_id"], "student_id", true);
+
+
+
+		if (!$subjects) {
+			response(false, ["message" => "No subject enrolled"]);
 			exit;
 		}
 
-		response(200, true, ["data" => $results]);
+		foreach ($subjects as $subject) {
+
+			$faculty = FacultyModel::fetchId($subject["faculty_id"], "faculty_id");
+
+			$facultyname = UserModel::find($faculty["user_id"], "user_id");
+
+			//trim the first word of the middlename
+			$middlename = substr($facultyname["middle_name"], 0, 1) . ".";
+			$fullname = $facultyname["first_name"] . " " . $middlename . " " . $facultyname["last_name"];
+
+			$returnData[] = [
+				"subject_code" => $subject["subject_code"],
+				"grades" => $subject["grades"],
+				"created_at" => $subject["created_at"],
+				"faculty" => $fullname
+			];
+		}
+
+		response(true, ["data" => $returnData]);
 	}
 }
 new Grades();
