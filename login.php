@@ -52,7 +52,29 @@ include(__DIR__ . "/partials/head.php");
 <script src="./asset/dist/js/adminlte.min.js"></script>
 <script>
 	$(function() {
+		// Check if user is logged in
+		function checkLoggedIn() {
+			const userData = JSON.parse(localStorage.getItem("user"));
+
+			if (userData) {
+				if (userData.role == 1) {
+					// Redirect to login page if user data is not found
+					window.location.href = "faculty/index.php";
+				} else if (userData.role == 2) {
+					window.location.href = "student/index.php";
+				} else if (userData.role == 0) {
+					window.location.href = "index.php";
+				}
+			}
+		}
+
+		// Call the function on page load
+		$(document).ready(function() {
+			checkLoggedIn();
+		});
+
 		let formData;
+
 		$("#login-form").on("submit", function(e) {
 			e.preventDefault();
 
@@ -79,7 +101,14 @@ include(__DIR__ . "/partials/head.php");
 			if (res.success == true) {
 				localStorage.setItem("user", JSON.stringify(res));
 
-				window.location.href = "index.php";
+				if (res.role == 0) {
+					window.location.href = "index.php";
+				} else if (res.role == 1) {
+					window.location.href = "faculty/index.php";
+				} else if (res.role == 2) {
+					window.location.href = "student/index.php";
+				}
+
 			} else if (res.success == false) {
 				// Show error message and retain entered credentials
 				$("#error-message").text("Invalid credentials. Please try again.");
@@ -92,6 +121,8 @@ include(__DIR__ . "/partials/head.php");
 		function handleError(err) {
 			console.log(err);
 		}
+
+
 	});
 </script>
 

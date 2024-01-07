@@ -99,35 +99,50 @@
 
 <script src="./asset/plugins/jquery/jquery.min.js"></script>
 <script>
-	// $(document).ready(function() {
-	// 	// Get the current page URL
-	// 	var currentUrl = window.location.href;
+	$(document).ready(function() {
+		// Get the current page URL
+		var currentUrl = window.location.href;
 
-	// 	// Loop through each navigation link
-	// 	$('.nav-link').each(function() {
-	// 		// Get the href attribute of the link
-	// 		var linkUrl = $(this).attr('href');
+		// Loop through each navigation link
+		$('.nav-link').each(function() {
+			// Get the href attribute of the link
+			var linkUrl = $(this).attr('href');
 
-	// 		// Check if the current URL contains the link URL
-	// 		if (currentUrl.includes(linkUrl)) {
-	// 			// Add the 'active' class to the current navigation link
-	// 			$(this).addClass('active');
-	// 		}
-	// 	});
+			// Check if the current URL contains the link URL
+			if (currentUrl.includes(linkUrl)) {
+				// Add the 'active' class to the current navigation link
+				$(this).addClass('active');
+			}
+		});
 
-	// 	// Logout function
-	// 	$(".logout-link").on("click", function(e) {
-	// 		e.preventDefault();
+		// Logout function
+		$(".logout-link").on("click", function(e) {
+			e.preventDefault();
 
-	// 		// Clear localStorage
-	// 		localStorage.removeItem("user");
+			// Add a confirmation before logging out
+			Swal.fire({
+				title: "Are you sure?",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#3085d6",
+				cancelButtonColor: "#d33",
+				confirmButtonText: "Logout"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					// Check if "user" key exists in localStorage
+					if (localStorage.getItem("user")) {
+						// Remove the "user" key from localStorage
+						localStorage.removeItem("user");
+					}
+					// Redirect to the login page
+					window.location.href = "login.php";
+				}
+			});
+		});
 
-	// 		// Redirect to the login page
-	// 		window.location.href = "login.php";
-	// 	});
 
-	// 	const username = JSON.parse(localStorage.user);
-	// 	$("#user-profile").text(username.username);
+		// const username = JSON.parse(localStorage.user);
+		// $("#user-profile").text(username.username);
 
-	// });
+	});
 </script>
