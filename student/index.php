@@ -96,7 +96,7 @@ include(__DIR__ . "/partials/head.php");
 						$("#table-body").append(`
                         <tr>
                             <td colspan="6" class="text-center">
-                                <p class="card-text">No Registered Subjects!</p>
+                                <p class="card-text">No Enrolled Subjects!</p>
                             </td>
                         </tr>
                     `);

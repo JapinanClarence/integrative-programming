@@ -46,6 +46,10 @@ class Dashboard extends Controller
 
 		$subjects = GradesModel::find($studentId["student_id"], "student_id", true);
 
+		if (!$subjects) {
+			response(false, ["active_school_year" => $activeSchoolYear["school_year"], "semester" => $activeSchoolYear["semester"]]);
+			exit;
+		}
 		foreach ($subjects as $subject) {
 
 			$subject = SubjectModel::find($subject["subject_code"], "code");
